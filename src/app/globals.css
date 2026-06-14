@@ -305,6 +305,12 @@ a {
   }
 }
 
+@media (max-width: 767px) {
+  :root {
+    --sidebar-width: 0px !important;
+  }
+}
+
 /* Focus ring */
 :focus-visible {
   outline: 2px solid var(--color-primary);

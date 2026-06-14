@@ -76,22 +76,22 @@ function ScheduleCard({ item }: { item: ScheduleItem }) {
   return (
     <Link href={`/anime/${item.media.id}`}>
       <motion.div
-        whileHover={{ x: 4 }}
-        className={`flex gap-3 p-3 rounded-2xl border transition-all group ${
+        whileHover={{ x: 4, scale: 1.01 }}
+        className={`flex gap-4 p-3.5 rounded-2xl border transition-all group ${
           isAired
             ? "bg-green-500/5 border-green-500/10 hover:border-green-500/30"
             : "bg-[var(--color-surface)] border-[var(--color-border)] hover:border-purple-500/30"
         }`}
       >
         {/* Cover */}
-        <div className="relative w-14 h-20 rounded-xl overflow-hidden bg-[var(--color-surface-2)] shrink-0">
+        <div className="relative w-16 h-22 rounded-xl overflow-hidden bg-[var(--color-surface-2)] shrink-0 shadow-sm border border-white/5">
           {item.media.coverImage.large && (
             <Image
               src={item.media.coverImage.large}
               alt={title}
               fill
-              className="object-cover group-hover:scale-105 transition-transform"
-              sizes="56px"
+              className="object-cover group-hover:scale-105 transition-transform duration-550"
+              sizes="64px"
             />
           )}
         </div>
@@ -102,23 +102,23 @@ function ScheduleCard({ item }: { item: ScheduleItem }) {
             <p className="text-sm font-bold line-clamp-1 group-hover:text-purple-400 transition-colors">
               {title}
             </p>
-            <p className="text-[11px] text-[var(--color-text-muted)] mt-0.5">
+            <p className="text-[11px] text-[var(--color-text-muted)] mt-1 font-semibold">
               Episode {item.episode}
               {item.media.episodes && ` / ${item.media.episodes}`}
               {item.media.format && ` • ${item.media.format}`}
             </p>
           </div>
-          <div className="flex items-center justify-between mt-1.5">
+          <div className="flex items-center justify-between mt-2">
             <div className="flex items-center gap-1.5">
-              <Clock size={11} className={isAired ? "text-green-400" : "text-purple-400"} />
-              <span className={`text-[11px] font-semibold ${isAired ? "text-green-400" : "text-purple-400"}`}>
+              <Clock size={12} className={isAired ? "text-green-400 animate-pulse" : "text-purple-400"} />
+              <span className={`text-[11px] font-extrabold ${isAired ? "text-green-400" : "text-purple-400"}`}>
                 {isAired ? formatTime(item.airingAt) : formatCountdown(item.timeUntilAiring)}
               </span>
             </div>
             {item.media.averageScore && (
-              <div className="flex items-center gap-1">
-                <Star size={10} className="text-yellow-500" fill="currentColor" />
-                <span className="text-[10px] text-[var(--color-text-muted)]">
+              <div className="flex items-center gap-1 bg-yellow-500/10 border border-yellow-500/20 px-1.5 py-0.5 rounded-lg text-yellow-500">
+                <Star size={10} className="fill-yellow-500" />
+                <span className="text-[10px] font-extrabold">
                   {(item.media.averageScore / 10).toFixed(1)}
                 </span>
               </div>
@@ -128,10 +128,10 @@ function ScheduleCard({ item }: { item: ScheduleItem }) {
 
         {/* Play icon */}
         <div className="self-center shrink-0">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-            isAired ? "bg-green-500/10 text-green-400" : "bg-purple-500/10 text-purple-400"
+          <div className={`w-9 h-9 rounded-full flex items-center justify-center shadow-md ${
+            isAired ? "bg-green-500/10 text-green-400 hover:bg-green-500/20" : "bg-purple-500/10 text-purple-400"
           }`}>
-            {isAired ? <Play size={12} fill="currentColor" /> : <Clock size={12} />}
+            {isAired ? <Play size={14} fill="currentColor" className="ml-0.5" /> : <Clock size={14} />}
           </div>
         </div>
       </motion.div>
@@ -176,32 +176,32 @@ export default function SchedulePage() {
     <>
       <TopBar />
       <main className="pt-safe pb-safe min-h-dvh">
-        <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-2xl mx-auto w-full px-4 pb-28">
+        <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-7xl mx-auto w-full px-4 md:px-8 pb-28">
           {/* Header */}
           <motion.div variants={itemVariants} className="pt-20 pb-4">
-            <h1 className="text-2xl font-black flex items-center gap-2" style={{ fontFamily: "var(--font-display)" }}>
+            <h1 className="text-2xl font-black flex items-center gap-2 text-white" style={{ fontFamily: "var(--font-display)" }}>
               <Calendar size={24} className="text-purple-400" />
               Jadwal Tayang
             </h1>
-            <p className="text-sm text-[var(--color-text-muted)] mt-1">
-              Anime yang tayang minggu ini
+            <p className="text-xs text-[var(--color-text-muted)] mt-1">
+              Jadwal tayang anime simulcast terbaru hari demi hari
             </p>
           </motion.div>
 
           {/* Day Tabs */}
           <motion.div variants={itemVariants} className="mb-6">
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            <div className="flex lg:grid lg:grid-cols-7 gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 scrollbar-none">
               {weekDays.map((day, i) => (
                 <button
                   key={i}
                   onClick={() => setSelectedDay(i)}
-                  className={`flex flex-col items-center min-w-[56px] py-2.5 px-3 rounded-2xl border transition-all ${
+                  className={`flex flex-col items-center min-w-[62px] lg:min-w-0 py-3 px-3 rounded-2xl border transition-all ${
                     selectedDay === i
-                      ? "bg-purple-500 border-purple-500 text-white shadow-lg shadow-purple-500/20"
+                      ? "bg-purple-500 border-purple-500 text-white shadow-lg shadow-purple-500/20 scale-[1.02]"
                       : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text-muted)] hover:border-purple-500/30"
                   }`}
                 >
-                  <span className="text-[10px] font-semibold uppercase">{day.short}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider">{day.short}</span>
                   <span className="text-lg font-black mt-0.5">{day.date.getDate()}</span>
                   {day.isToday && (
                     <div className={`w-1.5 h-1.5 rounded-full mt-1 ${selectedDay === i ? "bg-white" : "bg-purple-500"}`} />
@@ -213,28 +213,31 @@ export default function SchedulePage() {
 
           {/* Day Label */}
           <motion.div variants={itemVariants} className="mb-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 border-b border-white/5 pb-2">
               <Tv size={16} className="text-purple-400" />
-              <h2 className="text-base font-bold" style={{ fontFamily: "var(--font-display)" }}>
+              <h2 className="text-sm font-extrabold text-white" style={{ fontFamily: "var(--font-display)" }}>
                 {selectedDate.label}, {selectedDate.date.toLocaleDateString("id-ID", { day: "numeric", month: "long" })}
               </h2>
-              <span className="ml-auto text-xs text-[var(--color-text-muted)] font-semibold">
-                {schedules.length} anime
+              <span className="ml-auto text-xs text-[var(--color-text-muted)] font-extrabold">
+                {schedules.length} Anime Tayang
               </span>
             </div>
           </motion.div>
 
-          {/* Schedule List */}
-          <motion.div variants={itemVariants} className="space-y-2">
+          {/* Schedule Grid */}
+          <motion.div
+            variants={itemVariants}
+            className={loading || schedules.length === 0 ? "space-y-2" : "grid grid-cols-1 md:grid-cols-2 gap-4"}
+          >
             {loading ? (
-              <div className="flex flex-col items-center justify-center py-16 space-y-3">
+              <div className="flex flex-col items-center justify-center py-20 space-y-3 col-span-full">
                 <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
-                <p className="text-xs text-[var(--color-text-muted)]">Memuat jadwal...</p>
+                <p className="text-xs text-[var(--color-text-muted)] font-semibold">Memuat jadwal tayang...</p>
               </div>
             ) : schedules.length === 0 ? (
-              <div className="py-16 text-center space-y-2">
-                <Calendar size={40} className="mx-auto text-[var(--color-text-muted)] opacity-40" />
-                <p className="text-sm font-semibold text-[var(--color-text-muted)]">Tidak ada anime yang tayang hari ini</p>
+              <div className="py-20 text-center space-y-3 col-span-full bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)]">
+                <Calendar size={40} className="mx-auto text-[var(--color-text-muted)] opacity-30" />
+                <p className="text-sm font-bold text-[var(--color-text-muted)]">Tidak ada anime yang dijadwalkan hari ini</p>
               </div>
             ) : (
               schedules.map(item => <ScheduleCard key={item.id} item={item} />)

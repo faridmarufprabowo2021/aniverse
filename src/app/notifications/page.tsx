@@ -10,6 +10,8 @@ import {
 import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import { TopBar } from "@/components/layout/TopBar";
+import { BottomNavbar } from "@/components/layout/BottomNavbar";
 
 interface Notification {
   id: string;
@@ -166,219 +168,258 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] pb-24">
-      {/* Toast */}
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            initial={{ opacity: 0, y: -60 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -60 }}
-            className={`fixed top-16 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl shadow-2xl text-sm font-bold flex items-center gap-2 ${
-              toast.type === "success" ? "bg-green-600 text-white" :
-              toast.type === "error" ? "bg-red-600 text-white" :
-              "bg-zinc-800 text-white"
-            }`}
-          >
-            {toast.type === "success" ? <Check size={16} /> : toast.type === "error" ? <AlertTriangle size={16} /> : <Bell size={16} />}
-            {toast.msg}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="max-w-lg mx-auto px-4 pt-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-black flex items-center gap-2" style={{ fontFamily: "var(--font-display)" }}>
-              <Bell size={22} className="text-purple-400" />
-              Notifikasi
-              {unreadCount > 0 && (
-                <span className="px-2 py-0.5 rounded-full bg-purple-500 text-white text-xs font-bold">{unreadCount}</span>
-              )}
-            </h1>
-            <p className="text-xs text-[var(--color-text-muted)] mt-0.5">Episode baru & update anime favoritmu</p>
-          </div>
-          {unreadCount > 0 && (
-            <button onClick={markAllRead} className="text-xs font-semibold text-purple-400 hover:underline">
-              Tandai semua dibaca
-            </button>
-          )}
-        </div>
-
-        {/* Push Notification Subscribe Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={`p-4 rounded-2xl border flex items-center gap-4 ${
-            notifStatus === "active"
-              ? "bg-green-500/5 border-green-500/20"
-              : notifStatus === "denied"
-              ? "bg-red-500/5 border-red-500/20"
-              : "bg-purple-500/5 border-purple-500/20"
-          }`}
-        >
-          <div className={`p-3 rounded-xl shrink-0 ${
-            notifStatus === "active" ? "bg-green-500/10" :
-            notifStatus === "denied" ? "bg-red-500/10" : "bg-purple-500/10"
-          }`}>
-            {notifStatus === "active" ? <BellRing size={22} className="text-green-400" /> :
-             notifStatus === "denied" ? <BellOff size={22} className="text-red-400" /> :
-             notifStatus === "loading" ? <Loader2 size={22} className="text-purple-400 animate-spin" /> :
-             <Bell size={22} className="text-purple-400" />}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold">
-              {notifStatus === "active" ? "Notifikasi Aktif ✓" :
-               notifStatus === "denied" ? "Notifikasi Diblokir" :
-               notifStatus === "unsupported" ? "Tidak Didukung" :
-               "Aktifkan Notifikasi Episode Baru"}
-            </p>
-            <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-              {notifStatus === "active" ? "Kamu akan dapat notifikasi saat episode baru tayang" :
-               notifStatus === "denied" ? "Aktifkan notifikasi di pengaturan browser kamu" :
-               notifStatus === "unsupported" ? "Browser ini tidak mendukung push notification" :
-               "Dapatkan notifikasi langsung saat episode anime barumu tayang"}
-            </p>
-          </div>
-          {(notifStatus === "idle" || notifStatus === "loading") && (
-            <Button
-              size="sm"
-              onClick={subscribeToNotifications}
-              loading={notifStatus === "loading"}
-              className="shrink-0"
-            >
-              Aktifkan
-            </Button>
-          )}
-        </motion.div>
-
-        {/* Recently Aired Section */}
-        {airings.length > 0 && (
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Tv2 size={14} className="text-pink-400" />
-              <h2 className="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider">Baru Tayang (24 Jam Terakhir)</h2>
-            </div>
-            <div className="space-y-2">
-              {airings.slice(0, 8).map(a => (
-                <Link key={`${a.mediaId}-${a.episode}`} href={`/anime/${a.mediaId}`}>
-                  <div className="flex items-center gap-3 p-3 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl hover:border-purple-500/30 transition-all group">
-                    {a.coverImage && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={a.coverImage} alt={a.title} className="w-10 h-10 rounded-lg object-cover shrink-0" />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold truncate group-hover:text-purple-400 transition-colors">{a.title}</p>
-                      <p className="text-xs text-[var(--color-text-muted)]">Episode {a.episode} sudah tayang</p>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20">BARU</span>
-                      <ChevronRight size={14} className="text-[var(--color-text-muted)]" />
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* In-App Notifications */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Bell size={14} className="text-purple-400" />
-              <h2 className="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider">Riwayat Notifikasi</h2>
-            </div>
-            <button
-              onClick={() => window.location.reload()}
-              className="flex items-center gap-1 text-[11px] text-[var(--color-text-muted)] hover:text-white transition-colors"
-            >
-              <RefreshCcw size={11} /> Refresh
-            </button>
-          </div>
-
-          {loading ? (
-            <div className="py-12 flex flex-col items-center gap-3">
-              <Loader2 className="animate-spin text-purple-400" size={28} />
-              <p className="text-xs text-[var(--color-text-muted)]">Memuat notifikasi...</p>
-            </div>
-          ) : notifs.length === 0 ? (
+    <>
+      <TopBar />
+      <main className="pt-safe pb-safe min-h-screen">
+        {/* Toast */}
+        <AnimatePresence>
+          {toast && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="py-12 flex flex-col items-center gap-3 text-center"
+              initial={{ opacity: 0, y: -60 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -60 }}
+              className={`fixed top-16 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl text-sm font-bold shadow-2xl flex items-center gap-2 ${
+                toast.type === "success" ? "bg-green-600 text-white" :
+                toast.type === "error" ? "bg-red-600 text-white" :
+                "bg-zinc-800 text-white"
+              }`}
             >
-              <div className="w-16 h-16 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center justify-center">
-                <Bell size={28} className="text-[var(--color-text-muted)]" />
-              </div>
-              <div>
-                <p className="text-sm font-bold">Belum ada notifikasi</p>
-                <p className="text-xs text-[var(--color-text-muted)] mt-1">
-                  Aktifkan notifikasi dan tambahkan anime ke daftar &quot;Sedang Nonton&quot;
-                </p>
-              </div>
-              <Link href="/mylist">
-                <Button size="sm" icon={<Play size={13} />}>Kelola Daftar Anime</Button>
-              </Link>
+              {toast.type === "success" ? <Check size={16} /> : toast.type === "error" ? <AlertTriangle size={16} /> : <Bell size={16} />}
+              {toast.msg}
             </motion.div>
-          ) : (
-            <div className="space-y-2">
-              <AnimatePresence>
-                {notifs.map((n, i) => (
-                  <motion.div
-                    key={n.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.04 }}
-                    onClick={() => !n.is_read && markRead(n.id)}
-                    className={`relative flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
-                      n.is_read
-                        ? "bg-[var(--color-surface)] border-[var(--color-border)] opacity-70"
-                        : "bg-purple-500/5 border-purple-500/20 hover:bg-purple-500/10"
-                    }`}
-                  >
-                    {/* Unread dot */}
-                    {!n.is_read && (
-                      <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-purple-500" />
-                    )}
-
-                    {/* Icon */}
-                    <div className={`p-2 rounded-lg shrink-0 mt-0.5 ${
-                      n.type === "new_episode" ? "bg-green-500/10" : "bg-blue-500/10"
-                    }`}>
-                      {n.type === "new_episode"
-                        ? <Play size={14} className="text-green-400" fill="currentColor" />
-                        : <Star size={14} className="text-blue-400" />}
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      {n.type === "new_episode" && n.payload.title ? (
-                        <>
-                          <p className="text-sm font-bold text-[var(--color-text)] truncate">{n.payload.title}</p>
-                          <p className="text-xs text-[var(--color-text-muted)]">
-                            Episode {n.payload.episode} sudah tayang!
-                          </p>
-                        </>
-                      ) : (
-                        <p className="text-sm text-[var(--color-text-secondary)]">{n.payload.message || "Notifikasi baru"}</p>
-                      )}
-                      <p className="text-[10px] text-[var(--color-text-muted)] mt-1">{timeAgo(n.created_at)}</p>
-                    </div>
-
-                    {n.payload.anime_id && (
-                      <Link href={`/anime/${n.payload.anime_id}`} onClick={e => e.stopPropagation()}>
-                        <ChevronRight size={16} className="text-[var(--color-text-muted)] hover:text-purple-400 transition-colors shrink-0 mt-1" />
-                      </Link>
-                    )}
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
           )}
+        </AnimatePresence>
+
+        <div className="max-w-7xl mx-auto px-4 md:px-8 pt-4 pb-28 space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-4 mb-4">
+            <div>
+              <h1 className="text-xl md:text-2xl font-black flex items-center gap-2" style={{ fontFamily: "var(--font-display)" }}>
+                <Bell size={22} className="text-purple-400" />
+                Notifikasi
+                {unreadCount > 0 && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-purple-500 text-white text-[11px] font-black leading-none">{unreadCount}</span>
+                )}
+              </h1>
+              <p className="text-xs text-[var(--color-text-muted)] mt-0.5 font-medium">Episode baru & update anime favoritmu</p>
+            </div>
+            {unreadCount > 0 && (
+              <button onClick={markAllRead} className="text-xs font-bold text-purple-400 hover:underline">
+                Tandai semua dibaca
+              </button>
+            )}
+          </div>
+
+          {/* Desktop Grid Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left Column (Main Area): Push Banner & In-App Notifications */}
+            <div className="lg:col-span-8 xl:col-span-9 space-y-6">
+              {/* Push Notification Subscribe Banner */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`p-4 rounded-2xl border flex items-center gap-4 ${
+                  notifStatus === "active"
+                    ? "bg-green-500/5 border-green-500/20"
+                    : notifStatus === "denied"
+                    ? "bg-red-500/5 border-red-500/20"
+                    : "bg-purple-500/5 border-purple-500/20"
+                }`}
+              >
+                <div className={`p-3 rounded-xl shrink-0 ${
+                  notifStatus === "active" ? "bg-green-500/10" :
+                  notifStatus === "denied" ? "bg-red-500/10" : "bg-purple-500/10"
+                }`}>
+                  {notifStatus === "active" ? <BellRing size={22} className="text-green-400" /> :
+                   notifStatus === "denied" ? <BellOff size={22} className="text-red-400" /> :
+                   notifStatus === "loading" ? <Loader2 size={22} className="text-purple-400 animate-spin" /> :
+                   <Bell size={22} className="text-purple-400" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold">
+                    {notifStatus === "active" ? "Notifikasi Aktif ✓" :
+                     notifStatus === "denied" ? "Notifikasi Diblokir" :
+                     notifStatus === "unsupported" ? "Tidak Didukung" :
+                     "Aktifkan Notifikasi Episode Baru"}
+                  </p>
+                  <p className="text-xs text-[var(--color-text-muted)] mt-0.5 font-medium leading-relaxed">
+                    {notifStatus === "active" ? "Kamu akan dapat notifikasi saat episode baru tayang" :
+                     notifStatus === "denied" ? "Aktifkan notifikasi di pengaturan browser kamu" :
+                     notifStatus === "unsupported" ? "Browser ini tidak mendukung push notification" :
+                     "Dapatkan notifikasi langsung saat episode anime barumu tayang"}
+                  </p>
+                </div>
+                {(notifStatus === "idle" || notifStatus === "loading") && (
+                  <Button
+                    size="sm"
+                    onClick={subscribeToNotifications}
+                    loading={notifStatus === "loading"}
+                    className="shrink-0"
+                  >
+                    Aktifkan
+                  </Button>
+                )}
+              </motion.div>
+
+              {/* Mobile Airings (Shown only on Mobile) */}
+              {airings.length > 0 && (
+                <div className="lg:hidden space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Tv2 size={14} className="text-pink-400" />
+                    <h2 className="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider">Baru Tayang (24 Jam Terakhir)</h2>
+                  </div>
+                  <div className="space-y-2">
+                    {airings.slice(0, 8).map(a => (
+                      <Link key={`${a.mediaId}-${a.episode}`} href={`/anime/${a.mediaId}`}>
+                        <div className="flex items-center gap-3 p-3 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl hover:border-purple-500/30 transition-all group">
+                          {a.coverImage && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={a.coverImage} alt={a.title} className="w-10 h-10 rounded-lg object-cover shrink-0" />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold truncate group-hover:text-purple-400 transition-colors">{a.title}</p>
+                            <p className="text-xs text-[var(--color-text-muted)] font-medium">Episode {a.episode} sudah tayang</p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20">BARU</span>
+                            <ChevronRight size={14} className="text-[var(--color-text-muted)]" />
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* In-App Notifications List */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-[var(--color-border)]">
+                  <div className="flex items-center gap-2">
+                    <Bell size={14} className="text-purple-400" />
+                    <h2 className="text-xs font-black uppercase tracking-wider text-[var(--color-text-secondary)]">Riwayat Notifikasi</h2>
+                  </div>
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="flex items-center gap-1 text-[11px] font-bold text-[var(--color-text-muted)] hover:text-white transition-colors"
+                  >
+                    <RefreshCcw size={11} /> Refresh
+                  </button>
+                </div>
+
+                {loading ? (
+                  <div className="py-12 flex flex-col items-center gap-3">
+                    <Loader2 className="animate-spin text-purple-400" size={28} />
+                    <p className="text-xs text-[var(--color-text-muted)] font-medium">Memuat notifikasi...</p>
+                  </div>
+                ) : notifs.length === 0 ? (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="py-16 flex flex-col items-center gap-3 text-center bg-[var(--color-surface)] border border-[var(--color-border)] p-6 rounded-2xl"
+                  >
+                    <div className="w-16 h-16 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center">
+                      <Bell size={28} className="text-[var(--color-text-muted)]" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold">Belum ada notifikasi</p>
+                      <p className="text-xs text-[var(--color-text-muted)] mt-1 font-medium">
+                        Aktifkan notifikasi dan tambahkan anime ke daftar &quot;Sedang Nonton&quot;
+                      </p>
+                    </div>
+                    <Link href="/mylist">
+                      <Button size="sm" icon={<Play size={13} />}>Kelola Daftar Anime</Button>
+                    </Link>
+                  </motion.div>
+                ) : (
+                  <div className="space-y-2">
+                    <AnimatePresence>
+                      {notifs.map((n, i) => (
+                        <motion.div
+                          key={n.id}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.04 }}
+                          onClick={() => !n.is_read && markRead(n.id)}
+                          className={`relative flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-all shadow-sm ${
+                            n.is_read
+                              ? "bg-[var(--color-surface)] border-[var(--color-border)] opacity-70"
+                              : "bg-purple-500/5 border-purple-500/20 hover:bg-purple-500/10 hover:border-purple-500/30"
+                          }`}
+                        >
+                          {/* Unread dot */}
+                          {!n.is_read && (
+                            <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+                          )}
+
+                          {/* Icon */}
+                          <div className={`p-2 rounded-lg shrink-0 mt-0.5 ${
+                            n.type === "new_episode" ? "bg-green-500/10" : "bg-blue-500/10"
+                          }`}>
+                            {n.type === "new_episode"
+                              ? <Play size={14} className="text-green-400" fill="currentColor" />
+                              : <Star size={14} className="text-blue-400" />}
+                          </div>
+
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            {n.type === "new_episode" && n.payload.title ? (
+                              <>
+                                <p className="text-sm font-bold text-[var(--color-text-primary)] truncate">{n.payload.title}</p>
+                                <p className="text-xs text-[var(--color-text-secondary)] font-medium mt-0.5">
+                                  Episode {n.payload.episode} sudah tayang!
+                                </p>
+                              </>
+                            ) : (
+                              <p className="text-sm text-[var(--color-text-secondary)] font-bold">{n.payload.message || "Notifikasi baru"}</p>
+                            )}
+                            <p className="text-[10px] text-[var(--color-text-muted)] mt-1 font-semibold">{timeAgo(n.created_at)}</p>
+                          </div>
+
+                          {n.payload.anime_id && (
+                            <Link href={`/anime/${n.payload.anime_id}`} onClick={e => e.stopPropagation()}>
+                              <ChevronRight size={16} className="text-[var(--color-text-muted)] hover:text-purple-400 transition-colors shrink-0 mt-1" />
+                            </Link>
+                          )}
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right Column: Sidebar (Desktop-only): Recent Airings */}
+            {airings.length > 0 && (
+              <aside className="hidden lg:block lg:col-span-4 xl:col-span-3 space-y-6 lg:sticky lg:top-[90px]">
+                <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 space-y-4 hover:border-purple-500/20 transition-all duration-300 shadow-md">
+                  <div className="flex items-center gap-2 pb-3 border-b border-[var(--color-border)]">
+                    <Tv2 size={16} className="text-pink-400 animate-pulse" />
+                    <h2 className="text-xs font-black uppercase tracking-wider text-[var(--color-text-primary)]">Baru Tayang (24 Jam)</h2>
+                  </div>
+                  <div className="space-y-3">
+                    {airings.slice(0, 8).map(a => (
+                      <Link key={`${a.mediaId}-${a.episode}`} href={`/anime/${a.mediaId}`}>
+                        <div className="flex items-center gap-3 p-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] hover:border-purple-500/30 hover:bg-purple-500/5 transition-all duration-300 group shadow-sm">
+                          {a.coverImage && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={a.coverImage} alt={a.title} className="w-10 h-10 rounded-lg object-cover shrink-0 border border-[var(--color-border)]" />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-extrabold truncate group-hover:text-purple-400 transition-colors leading-tight">{a.title}</p>
+                            <p className="text-[10px] text-[var(--color-text-muted)] font-medium mt-0.5">Eps {a.episode} tayang</p>
+                          </div>
+                          <ChevronRight size={14} className="text-[var(--color-text-muted)] group-hover:text-purple-400 transition-colors shrink-0" />
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </aside>
+            )}
+          </div>
         </div>
-      </div>
-    </div>
+      </main>
+      <BottomNavbar />
+    </>
   );
 }

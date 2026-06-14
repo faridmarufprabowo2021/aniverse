@@ -113,7 +113,10 @@ export default function RootLayout({
         <Providers>
           <div className="flex min-h-dvh flex-col md:flex-row">
             <DesktopSidebar />
-            <div className="flex-1 flex flex-col min-w-0">
+            <div 
+              className="flex-1 flex flex-col min-w-0"
+              style={{ paddingLeft: "var(--sidebar-width, 256px)" }}
+            >
               {children}
             </div>
           </div>

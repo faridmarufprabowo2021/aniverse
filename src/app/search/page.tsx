@@ -48,7 +48,7 @@ const SORT_OPTIONS: { label: string; value: AnimeSort }[] = [
 const YEARS = Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - i);
 
 // ═══════════════════════════════════════
-// FILTER BOTTOM SHEET
+// FILTER COMPONENT (Re-used for Sidebar & Sheet)
 // ═══════════════════════════════════════
 
 interface Filters {
@@ -59,9 +59,7 @@ interface Filters {
   sort: AnimeSort;
 }
 
-interface FilterSheetProps {
-  open: boolean;
-  onClose: () => void;
+interface FilterContentProps {
   filters: Filters;
   onChange: (filters: Filters) => void;
 }
@@ -78,7 +76,7 @@ function FilterPill({
   return (
     <button
       onClick={onClick}
-      className="px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-150"
+      className="px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-150 select-none"
       style={{
         background: selected ? "var(--color-primary)" : "var(--color-surface-2)",
         borderColor: selected ? "var(--color-primary)" : "var(--color-border)",
@@ -90,13 +88,113 @@ function FilterPill({
   );
 }
 
-function FilterSheet({ open, onClose, filters, onChange }: FilterSheetProps) {
-  const local = { ...filters };
-
+function FilterContent({ filters, onChange }: FilterContentProps) {
   const update = (key: keyof Filters, val: unknown) => {
-    onChange({ ...local, [key]: val });
+    onChange({ ...filters, [key]: val });
   };
 
+  return (
+    <div className="space-y-5">
+      {/* Sort */}
+      <div>
+        <h3 className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">
+          Urutkan
+        </h3>
+        <div className="flex flex-wrap gap-1.5">
+          {SORT_OPTIONS.map((s) => (
+            <FilterPill
+              key={s.value}
+              label={s.label}
+              selected={filters.sort === s.value}
+              onClick={() => update("sort", s.value)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Genres */}
+      <div>
+        <h3 className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">
+          Genre
+        </h3>
+        <div className="flex flex-wrap gap-1.5">
+          {GENRES.map((g) => (
+            <FilterPill
+              key={g}
+              label={g}
+              selected={filters.genre === g}
+              onClick={() => update("genre", filters.genre === g ? undefined : g)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Format */}
+      <div>
+        <h3 className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">
+          Format
+        </h3>
+        <div className="flex flex-wrap gap-1.5">
+          {FORMATS.map((f) => (
+            <FilterPill
+              key={f.value}
+              label={f.label}
+              selected={filters.format === f.value}
+              onClick={() => update("format", filters.format === f.value ? undefined : f.value)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Season */}
+      <div>
+        <h3 className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">
+          Musim
+        </h3>
+        <div className="flex flex-wrap gap-1.5">
+          {SEASONS.map((s) => (
+            <FilterPill
+              key={s.value}
+              label={s.label}
+              selected={filters.season === s.value}
+              onClick={() => update("season", filters.season === s.value ? undefined : s.value)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Year */}
+      <div>
+        <h3 className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">
+          Tahun
+        </h3>
+        <div className="scroll-x flex gap-1.5 pb-1 max-w-full overflow-x-auto scrollbar-none">
+          {YEARS.map((y) => (
+            <FilterPill
+              key={y}
+              label={String(y)}
+              selected={filters.year === y}
+              onClick={() => update("year", filters.year === y ? undefined : y)}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════
+// FILTER BOTTOM SHEET (Mobile Only)
+// ═══════════════════════════════════════
+
+interface FilterSheetProps {
+  open: boolean;
+  onClose: () => void;
+  filters: Filters;
+  onChange: (filters: Filters) => void;
+}
+
+function FilterSheet({ open, onClose, filters, onChange }: FilterSheetProps) {
   const clear = () => onChange({ sort: "SEARCH_MATCH" });
 
   return (
@@ -120,7 +218,7 @@ function FilterSheet({ open, onClose, filters, onChange }: FilterSheetProps) {
           >
             <div className="bottom-sheet-handle" />
 
-            <div className="px-4 pb-8 space-y-5">
+            <div className="px-4 pb-8 space-y-5 max-h-[80vh] overflow-y-auto">
               {/* Header */}
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold" style={{ fontFamily: "var(--font-display)" }}>
@@ -134,92 +232,9 @@ function FilterSheet({ open, onClose, filters, onChange }: FilterSheetProps) {
                 </button>
               </div>
 
-              {/* Sort */}
-              <div>
-                <h3 className="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wide mb-2">
-                  Sort By
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {SORT_OPTIONS.map((s) => (
-                    <FilterPill
-                      key={s.value}
-                      label={s.label}
-                      selected={filters.sort === s.value}
-                      onClick={() => update("sort", s.value)}
-                    />
-                  ))}
-                </div>
-              </div>
+              <FilterContent filters={filters} onChange={onChange} />
 
-              {/* Genres */}
-              <div>
-                <h3 className="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wide mb-2">
-                  Genre
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {GENRES.map((g) => (
-                    <FilterPill
-                      key={g}
-                      label={g}
-                      selected={filters.genre === g}
-                      onClick={() => update("genre", filters.genre === g ? undefined : g)}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Format */}
-              <div>
-                <h3 className="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wide mb-2">
-                  Format
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {FORMATS.map((f) => (
-                    <FilterPill
-                      key={f.value}
-                      label={f.label}
-                      selected={filters.format === f.value}
-                      onClick={() => update("format", filters.format === f.value ? undefined : f.value)}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Season */}
-              <div>
-                <h3 className="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wide mb-2">
-                  Season
-                </h3>
-                <div className="flex gap-2">
-                  {SEASONS.map((s) => (
-                    <FilterPill
-                      key={s.value}
-                      label={s.label}
-                      selected={filters.season === s.value}
-                      onClick={() => update("season", filters.season === s.value ? undefined : s.value)}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Year */}
-              <div>
-                <h3 className="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wide mb-2">
-                  Year
-                </h3>
-                <div className="scroll-x flex gap-2 pb-1">
-                  {YEARS.map((y) => (
-                    <FilterPill
-                      key={y}
-                      label={String(y)}
-                      selected={filters.year === y}
-                      onClick={() => update("year", filters.year === y ? undefined : y)}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <Button fullWidth onClick={onClose}>Apply Filters</Button>
+              <Button fullWidth onClick={onClose} className="mt-4">Apply Filters</Button>
             </div>
           </motion.div>
         </>
@@ -229,7 +244,7 @@ function FilterSheet({ open, onClose, filters, onChange }: FilterSheetProps) {
 }
 
 // ═══════════════════════════════════════
-// SEARCH PAGE
+// SEARCH PAGE CONTENT
 // ═══════════════════════════════════════
 
 function SearchContent() {
@@ -240,6 +255,9 @@ function SearchContent() {
   const [filters, setFilters] = useState<Filters>({
     genre: searchParams.get("genre") ?? undefined,
     sort: (searchParams.get("sort") as AnimeSort) ?? "SEARCH_MATCH",
+    year: searchParams.get("year") ? Number(searchParams.get("year")) : undefined,
+    season: (searchParams.get("season") as AnimeSeason) ?? undefined,
+    format: (searchParams.get("format") as AnimeFormat) ?? undefined,
   });
   const [results, setResults] = useState<AnimeCard[]>([]);
   const [total, setTotal] = useState(0);
@@ -289,6 +307,15 @@ function SearchContent() {
       
       if (filters.genre) url.searchParams.set("genre", filters.genre);
       else url.searchParams.delete("genre");
+
+      if (filters.year) url.searchParams.set("year", filters.year.toString());
+      else url.searchParams.delete("year");
+
+      if (filters.season) url.searchParams.set("season", filters.season);
+      else url.searchParams.delete("season");
+
+      if (filters.format) url.searchParams.set("format", filters.format);
+      else url.searchParams.delete("format");
       
       if (filters.sort !== "SEARCH_MATCH") url.searchParams.set("sort", filters.sort);
       else url.searchParams.delete("sort");
@@ -319,7 +346,7 @@ function SearchContent() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search anime..."
+                placeholder="Cari anime..."
                 className="w-full h-11 pl-10 pr-4 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-[var(--radius-button)] text-sm text-[var(--color-text-primary)] focus:border-[var(--color-primary)] outline-none transition-colors"
               />
               {query && (
@@ -331,10 +358,12 @@ function SearchContent() {
                 </button>
               )}
             </div>
+            
+            {/* Mobile Filter Toggle */}
             <Button
               variant={activeFiltersCount > 0 ? "primary" : "outline"}
               onClick={() => setShowFilters(true)}
-              className="w-11 px-0 shrink-0 relative"
+              className="w-11 px-0 shrink-0 relative lg:hidden"
             >
               <SlidersHorizontal size={18} />
               {activeFiltersCount > 0 && (
@@ -347,9 +376,9 @@ function SearchContent() {
 
           {/* Quick Active Filters Scroll */}
           {activeFiltersCount > 0 && (
-            <div className="scroll-x flex gap-2 pb-1">
+            <div className="scroll-x flex gap-2 pb-1 overflow-x-auto max-w-full scrollbar-none">
               {filters.genre && (
-                <span className="shrink-0 flex items-center gap-1 px-2 py-0.5 bg-[var(--color-primary-bg)] border border-[var(--color-primary)] rounded-full text-xs text-[var(--color-primary)]">
+                <span className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 bg-[var(--color-primary-bg)] border border-[var(--color-primary)] rounded-full text-xs text-[var(--color-primary)] font-semibold">
                   {filters.genre}
                   <button onClick={() => setFilters((f) => ({ ...f, genre: undefined }))}>
                     <X size={10} />
@@ -357,9 +386,25 @@ function SearchContent() {
                 </span>
               )}
               {filters.year && (
-                <span className="shrink-0 flex items-center gap-1 px-2 py-0.5 bg-[var(--color-primary-bg)] border border-[var(--color-primary)] rounded-full text-xs text-[var(--color-primary)]">
+                <span className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 bg-[var(--color-primary-bg)] border border-[var(--color-primary)] rounded-full text-xs text-[var(--color-primary)] font-semibold">
                   {filters.year}
                   <button onClick={() => setFilters((f) => ({ ...f, year: undefined }))}>
+                    <X size={10} />
+                  </button>
+                </span>
+              )}
+              {filters.season && (
+                <span className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 bg-[var(--color-primary-bg)] border border-[var(--color-primary)] rounded-full text-xs text-[var(--color-primary)] font-semibold uppercase">
+                  {filters.season}
+                  <button onClick={() => setFilters((f) => ({ ...f, season: undefined }))}>
+                    <X size={10} />
+                  </button>
+                </span>
+              )}
+              {filters.format && (
+                <span className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 bg-[var(--color-primary-bg)] border border-[var(--color-primary)] rounded-full text-xs text-[var(--color-primary)] font-semibold">
+                  {filters.format}
+                  <button onClick={() => setFilters((f) => ({ ...f, format: undefined }))}>
                     <X size={10} />
                   </button>
                 </span>
@@ -369,48 +414,74 @@ function SearchContent() {
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto w-full px-4 md:px-8 py-4 pb-safe">
-        {/* Results header */}
-        {!loading && (results.length > 0 || query) && (
-          <p className="text-xs text-[var(--color-text-muted)] mb-4">
-            {results.length > 0
-              ? `${total.toLocaleString()} results${query ? ` for "${query}"` : ""}`
-              : `No results${query ? ` for "${query}"` : ""}`}
-          </p>
-        )}
-
-        {/* Empty state */}
-        {!loading && results.length === 0 && !query && !filters.genre && (
-          <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
-            <div className="text-6xl">🔍</div>
-            <div>
-              <p className="text-lg font-bold" style={{ fontFamily: "var(--font-display)" }}>
-                Search AniVerse
-              </p>
-              <p className="text-sm text-[var(--color-text-muted)] mt-1">
-                Find anime by title, genre, year, and more
-              </p>
+      <main className="max-w-7xl mx-auto w-full px-4 md:px-8 py-6 pb-safe">
+        {/* Desktop Sidebar Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Sidebar Filter - Desktop Only */}
+          <aside className="hidden lg:block lg:col-span-4 xl:col-span-3 lg:sticky lg:top-20 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 shadow-sm space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--color-border)]">
+              <h2 className="text-sm font-extrabold flex items-center gap-1.5" style={{ fontFamily: "var(--font-display)" }}>
+                <SlidersHorizontal size={14} className="text-[var(--color-primary)]" /> Filter Anime
+              </h2>
+              {activeFiltersCount > 0 && (
+                <button
+                  onClick={() => setFilters({ sort: "SEARCH_MATCH" })}
+                  className="text-xs text-[var(--color-primary)] hover:underline font-semibold"
+                >
+                  Reset
+                </button>
+              )}
             </div>
-          </div>
-        )}
-
-        {/* No results */}
-        {!loading && results.length === 0 && (query || filters.genre) && (
-          <div className="flex flex-col items-center justify-center py-16 text-center gap-4">
-            <div className="text-5xl">😶</div>
-            <div>
-              <p className="text-base font-bold" style={{ fontFamily: "var(--font-display)" }}>
-                No anime found
-              </p>
-              <p className="text-sm text-[var(--color-text-muted)] mt-1">
-                Try adjusting your search or filters
-              </p>
+            <div className="overflow-y-auto max-h-[calc(100vh-220px)] pr-1 scrollbar-thin">
+              <FilterContent filters={filters} onChange={(f) => setFilters(f)} />
             </div>
-          </div>
-        )}
+          </aside>
 
-        {/* Results grid */}
-        <AnimeGrid anime={results} loading={loading} skeletonCount={12} />
+          {/* Search Results Area */}
+          <div className="lg:col-span-8 xl:col-span-9 space-y-4">
+            {/* Results header */}
+            {!loading && (results.length > 0 || query) && (
+              <p className="text-xs text-[var(--color-text-muted)]">
+                {results.length > 0
+                  ? `${total.toLocaleString()} hasil ditemukan${query ? ` untuk "${query}"` : ""}`
+                  : `Tidak ada hasil${query ? ` untuk "${query}"` : ""}`}
+              </p>
+            )}
+
+            {/* Empty state */}
+            {!loading && results.length === 0 && !query && !filters.genre && !filters.year && !filters.season && !filters.format && (
+              <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
+                <div className="text-6xl">🔍</div>
+                <div>
+                  <p className="text-lg font-bold" style={{ fontFamily: "var(--font-display)" }}>
+                    Cari di AniVerse
+                  </p>
+                  <p className="text-sm text-[var(--color-text-muted)] mt-1">
+                    Cari anime berdasarkan judul, genre, tahun, dan lainnya
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* No results */}
+            {!loading && results.length === 0 && (query || filters.genre || filters.year || filters.season || filters.format) && (
+              <div className="flex flex-col items-center justify-center py-16 text-center gap-4">
+                <div className="text-5xl">😶</div>
+                <div>
+                  <p className="text-base font-bold" style={{ fontFamily: "var(--font-display)" }}>
+                    Anime tidak ditemukan
+                  </p>
+                  <p className="text-sm text-[var(--color-text-muted)] mt-1">
+                    Coba sesuaikan pencarian atau filter Anda
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Results grid */}
+            <AnimeGrid anime={results} loading={loading} skeletonCount={12} />
+          </div>
+        </div>
       </main>
 
       <BottomNavbar />

@@ -383,6 +383,7 @@ function InAppPlayer({
                   src={activeUrl} 
                   allowFullScreen 
                   allow="autoplay; fullscreen; encrypted-media; screen-wake-lock"
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-pointer-lock"
                   className="w-full h-full border-none bg-black"
                   title={`${providerLabel} Video Player`}
                   onError={() => setIframeError(true)}

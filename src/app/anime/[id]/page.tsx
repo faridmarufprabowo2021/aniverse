@@ -349,10 +349,10 @@ export default function AnimeDetailPage({ params }: PageProps) {
           className="px-4 md:px-8 max-w-7xl mx-auto w-full pb-10 -mt-28 relative z-10 space-y-6"
         >
           {/* Main Grid/Flex Container */}
-          <div className="flex flex-col md:flex-row gap-6 lg:gap-10 items-start">
+          <div className="flex flex-col md:flex-row gap-6 lg:gap-10 items-start w-full">
             
-            {/* COLUMN 1: LEFT SIDEBAR (Desktop: 288px width, Mobile: full width) */}
-            <div className="w-full md:w-72 shrink-0 space-y-6">
+            {/* COLUMN 1: LEFT SIDEBAR (Desktop: 288px width, Mobile: full width, sticky on desktop) */}
+            <div className="w-full md:w-72 shrink-0 md:sticky md:top-6 space-y-6">
               
               {/* Cover Card and Titles for Mobile */}
               <div className="flex gap-4 items-end md:items-start md:flex-col">
@@ -452,7 +452,7 @@ export default function AnimeDetailPage({ params }: PageProps) {
             </div>
 
             {/* COLUMN 2: RIGHT PANEL (Desktop: 2/3 width) */}
-            <div className="flex-1 w-full space-y-6">
+            <div className="flex-1 w-full min-w-0 space-y-6">
               
               {/* Header Title (Desktop Only) */}
               <div className="hidden md:block pb-4 border-b border-[var(--color-border)]">
@@ -529,6 +529,7 @@ export default function AnimeDetailPage({ params }: PageProps) {
                       title={`${title} Trailer`}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
+                      sandbox="allow-scripts allow-same-origin allow-presentation"
                       className="absolute inset-0 w-full h-full"
                     />
                   </div>
