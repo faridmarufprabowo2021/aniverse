@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/notify-airing",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}

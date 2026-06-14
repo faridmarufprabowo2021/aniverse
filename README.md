@@ -1,36 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AniVerse 🌌 - Tracker Anime & Komik Indonesia (PWA Ready)
 
-## Getting Started
+AniVerse adalah web tracker anime dan komik modern yang kaya fitur, dirancang khusus untuk komunitas anime di Indonesia. Dengan integrasi data real-time, dashboard statistik pengguna, pemutar video multi-provider bawaan, pembaca manga, dan dukungan PWA penuh.
 
-First, run the development server:
+---
 
+## ✨ Fitur Utama
+
+### 1. 📺 Streaming Anime Multi-Provider (In-App Player)
+*   Integrasi pemutar video kustom pintar dengan pencarian otomatis di 5 provider lokal:
+    *   **Samehadaku** (Utama, Blogger Player bebas iklan)
+    *   **Stream Indo** (GDrive & MP4Upload)
+    *   **OtakuDesu** (Sub Indo lengkap)
+    *   **Oploverz**
+    *   **Winbu**
+*   Fitur auto-play episode selanjutnya dan tombol *Skip Intro* (90 detik pertama).
+*   *Smart Redirect* ke web pencarian provider jika terjadi pemblokiran.
+
+### 2. 📖 Pembaca Manga (Komikindo & Default API)
+*   Sistem pembaca manga sub-indo langsung di dalam aplikasi.
+*   Mendukung pencarian komik, daftar rilis terbaru, detail chapter, navigasi antar chapter, dan mode pembaca bersih.
+*   Proxy server-side bypass hotlink protection untuk mempercepat pemuatan gambar dari server komik CDN.
+
+### 3. 📊 Profil Pengguna & Statistik Watchlist (Supabase)
+*   Dashboard visual yang memukau dengan statistik nonton:
+    *   *Total Waktu Menonton* (dalam menit/hari).
+    *   *Rata-rata Skor Bintang* yang diberikan.
+    *   *Total Episode* yang diselesaikan.
+*   Daftar tontonan pribadi (Watchlist) yang tersinkronisasi aman dengan basis data Supabase.
+
+### 4. 📴 Progressive Web App (PWA) & Offline Mode
+*   Bisa diinstal langsung di HP (Android/iOS) atau PC layaknya aplikasi native.
+*   Mendukung caching Service Worker kustom.
+*   Halaman offline yang cantik (`<WifiOff />`) untuk memberi tahu pengguna jika jaringan internet terputus.
+
+---
+
+## 🚀 Teknologi yang Digunakan
+
+*   **Framework Utama:** [Next.js 16 (Turbopack)](https://nextjs.org/) dengan App Router.
+*   **Library UI/UX:** [React 19](https://react.dev/), [Tailwind CSS v4](https://tailwindcss.com/), [Framer Motion](https://www.framer.com/motion/), dan [Lucide React](https://lucide.dev/) untuk visual yang modern dan premium.
+*   **Database & Autentikasi:** [Supabase](https://supabase.com/) (Postgres DB, GoTrue Auth, Realtime).
+*   **State Management & Querying:** [Zustand](https://zustand-demo.pmnd.rs/) & [@tanstack/react-query v5](https://tanstack.com/query/latest).
+*   **Grafik Statistik:** [Recharts](https://recharts.org/) untuk visualisasi data watchlist.
+*   **Data Anime:** [AniList GraphQL API](https://anilist.gitbook.io/anilist-apiv2-docs/).
+*   **Data Streaming & Manga:** Sanka Vollerei API (`sankavollerei.web.id`).
+
+---
+
+## 🛠️ Cara Instalasi & Menjalankan Proyek
+
+### 1. Prasyarat
+Pastikan kamu sudah menginstal Node.js versi terbaru (direkomendasikan v18+).
+
+### 2. Kloning Proyek
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <url-repositori-github-kamu>
+cd aniverse
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Instal Dependensi
+```bash
+npm install --legacy-peer-deps
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. Konfigurasi Environment Variables (`.env.local`)
+Buat file bernama `.env.local` di root folder proyek dan tambahkan konfigurasi berikut:
+```env
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 5. Jalankan Server Pengembangan (Local Dev)
+```bash
+npm run dev
+```
+Buka [http://localhost:3000](http://localhost:3000) di browser untuk menjelajahi aplikasi.
 
-## Learn More
+### 6. Build Produksi
+```bash
+npm run build
+npm run start
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📂 Struktur Direktori
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+aniverse/
+├── public/                # File statis, manifest PWA, & icon set
+├── src/
+│   ├── app/               # Rute halaman Next.js (App Router)
+│   │   ├── anime/         # Halaman Detail Anime & Player
+│   │   ├── manga/         # Halaman Detail Manga & Chapter Reader
+│   │   ├── profile/       # Dashboard Profil & Statistik
+│   │   ├── offline/       # Halaman fallback mode Offline
+│   │   └── api/           # Endpoint API Server-side Proxy
+│   ├── components/        # Komponen UI responsif (layout, anime, ui)
+│   ├── lib/               # Utility, Supabase Client, & API integrations
+│   └── types/             # Deklarasi tipe data TypeScript
+├── eslint.config.mjs      # Konfigurasi ESLint Flat Config
+├── next.config.ts         # Konfigurasi Next.js
+└── tsconfig.json          # Konfigurasi TypeScript
+```
