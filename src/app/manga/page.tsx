@@ -202,7 +202,7 @@ export default function MangaPage() {
     <>
       <TopBar />
       <main className="pt-safe pb-safe min-h-screen">
-        <div className="max-w-lg mx-auto px-4 pt-4 pb-28 space-y-5">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 pt-4 pb-28 space-y-6">
           {/* Header */}
           <div className="flex items-center gap-2">
             <BookOpen size={22} className="text-blue-400" />
@@ -280,7 +280,7 @@ export default function MangaPage() {
                 {searchResults.length} hasil untuk &quot;{searchQuery}&quot;
               </p>
               {searchResults.length > 0 ? (
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-3 md:gap-4">
                   {searchResults.map((c, i) => (
                     <motion.div key={c.slug + i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
                       <ComicCard comic={c} />
@@ -328,7 +328,7 @@ export default function MangaPage() {
                       {filteredLatest.length}
                     </span>
                   </div>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-3 md:gap-4">
                     {filteredLatest.map((c, i) => (
                       <motion.div key={c.slug + i} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: Math.min(i * 0.02, 0.5) }}>
                         <ComicCard comic={c} />

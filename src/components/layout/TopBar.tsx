@@ -17,7 +17,7 @@ export function TopBar({ transparent, className }: TopBarProps) {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4",
+        "fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 md:hidden",
         "transition-all duration-300",
         transparent
           ? "bg-transparent"

@@ -160,7 +160,7 @@ export function AnimeGrid({
     return (
       <div
         className={cn(
-          "grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
+          "grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 md:gap-x-4 md:gap-y-6",
           className
         )}
       >
@@ -180,7 +180,7 @@ export function AnimeGrid({
         show: { transition: { staggerChildren: 0.04, delayChildren: 0.05 } },
       }}
       className={cn(
-        "grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
+        "grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 md:gap-x-4 md:gap-y-6",
         className
       )}
     >
@@ -214,8 +214,7 @@ export function AnimeCarousel({
         {Array.from({ length: 6 }).map((_, i) => (
           <AnimeCardSkeleton
             key={i}
-            className="shrink-0"
-            style={{ width: cardWidth }}
+            className="shrink-0 w-[130px] sm:w-[145px] md:w-[160px] lg:w-[170px]"
           />
         ))}
       </div>
@@ -225,7 +224,7 @@ export function AnimeCarousel({
   return (
     <div className="scroll-x flex gap-3 pb-2">
       {anime.map((a) => (
-        <div key={a.id} className="shrink-0 snap-item" style={{ width: cardWidth }}>
+        <div key={a.id} className="shrink-0 snap-item w-[130px] sm:w-[145px] md:w-[160px] lg:w-[170px]">
           <AnimeCard anime={a} showScore={showScore} />
         </div>
       ))}

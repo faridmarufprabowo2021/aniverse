@@ -47,7 +47,7 @@ export function BottomNavbar() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 glass-heavy border-t border-[var(--color-border)]"
+      className="fixed bottom-0 left-0 right-0 z-50 glass-heavy border-t border-[var(--color-border)] md:hidden"
       style={{
         height: "calc(var(--bottom-nav-height) + var(--safe-area-bottom))",
         paddingBottom: "var(--safe-area-bottom)",

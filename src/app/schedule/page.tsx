@@ -176,9 +176,9 @@ export default function SchedulePage() {
     <>
       <TopBar />
       <main className="pt-safe pb-safe min-h-dvh">
-        <motion.div variants={containerVariants} initial="hidden" animate="show" className="pb-28">
+        <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-2xl mx-auto w-full px-4 pb-28">
           {/* Header */}
-          <motion.div variants={itemVariants} className="px-4 pt-20 pb-4">
+          <motion.div variants={itemVariants} className="pt-20 pb-4">
             <h1 className="text-2xl font-black flex items-center gap-2" style={{ fontFamily: "var(--font-display)" }}>
               <Calendar size={24} className="text-purple-400" />
               Jadwal Tayang
@@ -189,7 +189,7 @@ export default function SchedulePage() {
           </motion.div>
 
           {/* Day Tabs */}
-          <motion.div variants={itemVariants} className="px-4 mb-6">
+          <motion.div variants={itemVariants} className="mb-6">
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
               {weekDays.map((day, i) => (
                 <button
@@ -212,7 +212,7 @@ export default function SchedulePage() {
           </motion.div>
 
           {/* Day Label */}
-          <motion.div variants={itemVariants} className="px-4 mb-4">
+          <motion.div variants={itemVariants} className="mb-4">
             <div className="flex items-center gap-2">
               <Tv size={16} className="text-purple-400" />
               <h2 className="text-base font-bold" style={{ fontFamily: "var(--font-display)" }}>
@@ -225,7 +225,7 @@ export default function SchedulePage() {
           </motion.div>
 
           {/* Schedule List */}
-          <motion.div variants={itemVariants} className="px-4 space-y-2">
+          <motion.div variants={itemVariants} className="space-y-2">
             {loading ? (
               <div className="flex flex-col items-center justify-center py-16 space-y-3">
                 <Loader2 className="w-8 h-8 animate-spin text-purple-500" />

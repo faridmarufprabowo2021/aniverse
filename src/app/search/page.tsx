@@ -309,65 +309,67 @@ function SearchContent() {
       <TopBar />
       
       {/* Search Header fixed below topbar */}
-      <div className="sticky top-16 z-30 bg-[var(--color-bg)]/80 backdrop-blur-xl border-b border-[var(--color-border)] px-4 py-3 space-y-3">
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" size={18} />
-            <input
-              ref={inputRef}
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search anime..."
-              className="w-full h-11 pl-10 pr-4 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-[var(--radius-button)] text-sm text-[var(--color-text-primary)] focus:border-[var(--color-primary)] outline-none transition-colors"
-            />
-            {query && (
-              <button
-                onClick={() => setQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] hover:text-white"
-              >
-                <X size={16} />
-              </button>
-            )}
+      <div className="sticky top-16 md:top-0 z-30 bg-[var(--color-bg)]/80 backdrop-blur-xl border-b border-[var(--color-border)] py-3">
+        <div className="max-w-7xl mx-auto w-full px-4 md:px-8 space-y-3">
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" size={18} />
+              <input
+                ref={inputRef}
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search anime..."
+                className="w-full h-11 pl-10 pr-4 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-[var(--radius-button)] text-sm text-[var(--color-text-primary)] focus:border-[var(--color-primary)] outline-none transition-colors"
+              />
+              {query && (
+                <button
+                  onClick={() => setQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] hover:text-white"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+            <Button
+              variant={activeFiltersCount > 0 ? "primary" : "outline"}
+              onClick={() => setShowFilters(true)}
+              className="w-11 px-0 shrink-0 relative"
+            >
+              <SlidersHorizontal size={18} />
+              {activeFiltersCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--color-accent)] rounded-full text-[10px] font-bold flex items-center justify-center text-white border-2 border-[var(--color-bg)]">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </Button>
           </div>
-          <Button
-            variant={activeFiltersCount > 0 ? "primary" : "outline"}
-            onClick={() => setShowFilters(true)}
-            className="w-11 px-0 shrink-0 relative"
-          >
-            <SlidersHorizontal size={18} />
-            {activeFiltersCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--color-accent)] rounded-full text-[10px] font-bold flex items-center justify-center text-white border-2 border-[var(--color-bg)]">
-                {activeFiltersCount}
-              </span>
-            )}
-          </Button>
-        </div>
 
-        {/* Quick Active Filters Scroll */}
-        {activeFiltersCount > 0 && (
-          <div className="scroll-x flex gap-2 pb-1">
-            {filters.genre && (
-              <span className="shrink-0 flex items-center gap-1 px-2 py-0.5 bg-[var(--color-primary-bg)] border border-[var(--color-primary)] rounded-full text-xs text-[var(--color-primary)]">
-                {filters.genre}
-                <button onClick={() => setFilters((f) => ({ ...f, genre: undefined }))}>
-                  <X size={10} />
-                </button>
-              </span>
-            )}
-            {filters.year && (
-              <span className="shrink-0 flex items-center gap-1 px-2 py-0.5 bg-[var(--color-primary-bg)] border border-[var(--color-primary)] rounded-full text-xs text-[var(--color-primary)]">
-                {filters.year}
-                <button onClick={() => setFilters((f) => ({ ...f, year: undefined }))}>
-                  <X size={10} />
-                </button>
-              </span>
-            )}
-          </div>
-        )}
+          {/* Quick Active Filters Scroll */}
+          {activeFiltersCount > 0 && (
+            <div className="scroll-x flex gap-2 pb-1">
+              {filters.genre && (
+                <span className="shrink-0 flex items-center gap-1 px-2 py-0.5 bg-[var(--color-primary-bg)] border border-[var(--color-primary)] rounded-full text-xs text-[var(--color-primary)]">
+                  {filters.genre}
+                  <button onClick={() => setFilters((f) => ({ ...f, genre: undefined }))}>
+                    <X size={10} />
+                  </button>
+                </span>
+              )}
+              {filters.year && (
+                <span className="shrink-0 flex items-center gap-1 px-2 py-0.5 bg-[var(--color-primary-bg)] border border-[var(--color-primary)] rounded-full text-xs text-[var(--color-primary)]">
+                  {filters.year}
+                  <button onClick={() => setFilters((f) => ({ ...f, year: undefined }))}>
+                    <X size={10} />
+                  </button>
+                </span>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
-      <main className="px-4 py-4 pb-safe">
+      <main className="max-w-7xl mx-auto w-full px-4 md:px-8 py-4 pb-safe">
         {/* Results header */}
         {!loading && (results.length > 0 || query) && (
           <p className="text-xs text-[var(--color-text-muted)] mb-4">

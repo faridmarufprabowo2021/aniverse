@@ -112,9 +112,9 @@ export default function TopPage() {
     <>
       <TopBar />
 
-      <main className="pt-safe pb-safe">
+      <main className="pt-safe pb-safe max-w-3xl mx-auto w-full px-4 md:px-8 pb-24">
         {/* Header */}
-        <div className="px-4 pt-4 pb-2">
+        <div className="pt-4 pb-2">
           <h1 className="text-2xl font-black" style={{ fontFamily: "var(--font-display)" }}>
             ⭐ Peringkat Terbaik
           </h1>
@@ -124,7 +124,7 @@ export default function TopPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 px-4 pb-4">
+        <div className="flex gap-2 pb-4">
           {TABS.map((t, i) => (
             <button
               key={t.label}
@@ -143,7 +143,7 @@ export default function TopPage() {
         </div>
 
         {/* Ranked List */}
-        <div className="px-4">
+        <div>
           {loading ? (
             <div>
               {Array.from({ length: 10 }).map((_, i) => (

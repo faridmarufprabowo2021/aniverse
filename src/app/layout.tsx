@@ -4,6 +4,7 @@ import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistratio
 import { InstallPrompt } from "@/components/ui/InstallPrompt";
 import { Providers } from "@/components/Providers";
 import { AIChatWidget } from "@/components/ai/AIChatWidget";
+import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
 import "./globals.css";
 
 const inter = Inter({
@@ -110,7 +111,12 @@ export default function RootLayout({
           })();
         `}} />
         <Providers>
-          {children}
+          <div className="flex min-h-dvh flex-col md:flex-row">
+            <DesktopSidebar />
+            <div className="flex-1 flex flex-col min-w-0">
+              {children}
+            </div>
+          </div>
           <AIChatWidget />
           <InstallPrompt />
           <ServiceWorkerRegistration />

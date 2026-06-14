@@ -21,6 +21,7 @@ const ANIME_CARD_FRAGMENT = `
   season
   seasonYear
   isAdult
+  description(asHtml: false)
   nextAiringEpisode { airingAt episode timeUntilAiring }
 `;
 
@@ -259,6 +260,7 @@ function normalizeCard(media: any): AnimeCard {
     year: media.seasonYear,
     nextAiringEpisode: media.nextAiringEpisode,
     isAiring: media.status === "RELEASING",
+    description: media.description ?? undefined,
   };
 }
 

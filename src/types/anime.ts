@@ -173,6 +173,7 @@ export interface AnimeCard {
   nextAiringEpisode?: NextAiringEpisode;
   isAiring?: boolean;
   trending?: number;
+  description?: string;
 }
 
 // Search params

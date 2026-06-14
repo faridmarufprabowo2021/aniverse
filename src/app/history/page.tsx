@@ -82,9 +82,9 @@ export default function HistoryPage() {
     <>
       <TopBar />
       <main className="pt-safe pb-safe min-h-dvh">
-        <motion.div variants={containerVariants} initial="hidden" animate="show" className="pb-28">
+        <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-2xl mx-auto w-full px-4 pb-28">
           {/* Header */}
-          <motion.div variants={itemVariants} className="px-4 pt-20 pb-2">
+          <motion.div variants={itemVariants} className="pt-20 pb-2">
             <div className="flex items-center justify-between">
               <h1 className="text-2xl font-black flex items-center gap-2" style={{ fontFamily: "var(--font-display)" }}>
                 <History size={24} className="text-purple-400" />
@@ -102,7 +102,7 @@ export default function HistoryPage() {
           </motion.div>
 
           {/* Tabs */}
-          <motion.div variants={itemVariants} className="px-4 mt-2 mb-4">
+          <motion.div variants={itemVariants} className="mt-2 mb-4">
             <div className="flex gap-1 p-1 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)]">
               <button
                 onClick={() => setTab("anime")}
@@ -140,7 +140,7 @@ export default function HistoryPage() {
           </motion.div>
 
           {/* Content */}
-          <motion.div variants={itemVariants} className="px-4 space-y-3">
+          <motion.div variants={itemVariants} className="space-y-3">
             {loading ? (
               <div className="flex flex-col items-center justify-center py-16 space-y-3">
                 <Loader2 className="w-8 h-8 animate-spin text-purple-500" />

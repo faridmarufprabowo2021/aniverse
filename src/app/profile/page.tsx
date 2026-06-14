@@ -268,7 +268,7 @@ export default function ProfilePage() {
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="space-y-6 pb-28"
+          className="max-w-2xl mx-auto px-4 space-y-6 pb-28"
         >
           {/* ═══ Profile Header ═══ */}
           <motion.div variants={itemVariants} className="relative pt-20 pb-8 px-6 text-center overflow-hidden">

@@ -122,9 +122,9 @@ export default function RecommendationsPage() {
     <>
       <TopBar />
       <main className="pt-safe pb-safe min-h-dvh">
-        <motion.div variants={containerVariants} initial="hidden" animate="show" className="pb-28">
+        <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-2xl mx-auto w-full px-4 pb-28">
           {/* Header */}
-          <motion.div variants={itemVariants} className="px-4 pt-20 pb-3">
+          <motion.div variants={itemVariants} className="pt-20 pb-3">
             <Link href="/profile" className="inline-flex items-center gap-1.5 text-xs text-[var(--color-text-muted)] hover:text-purple-400 transition-colors mb-3">
               <ArrowLeft size={14} /> Kembali ke Profil
             </Link>
@@ -145,7 +145,7 @@ export default function RecommendationsPage() {
 
           {/* No Data State */}
           {!hasData && (
-            <motion.div variants={itemVariants} className="px-4 mt-8">
+            <motion.div variants={itemVariants} className="mt-8">
               <div className="text-center py-12 bg-[var(--color-surface)] rounded-3xl border border-[var(--color-border)]">
                 <div className="w-16 h-16 mx-auto rounded-2xl bg-purple-500/10 flex items-center justify-center mb-4">
                   <Brain size={28} className="text-purple-400 opacity-50" />
@@ -169,7 +169,7 @@ export default function RecommendationsPage() {
           {hasData && (
             <>
               {/* Tabs */}
-              <motion.div variants={itemVariants} className="px-4 mt-2 mb-4">
+              <motion.div variants={itemVariants} className="mt-2 mb-4">
                 <div className="flex gap-1 p-1 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)]">
                   {[
                     { key: "anime", label: "Anime", icon: Tv, color: "purple" },
@@ -200,7 +200,7 @@ export default function RecommendationsPage() {
               </motion.div>
 
               {/* Content */}
-              <motion.div variants={itemVariants} className="px-4">
+              <motion.div variants={itemVariants}>
                 {loading && !currentResult ? (
                   <div className="py-16 text-center space-y-4">
                     <div className="relative w-16 h-16 mx-auto">
@@ -263,7 +263,7 @@ export default function RecommendationsPage() {
                     </div>
 
                     {/* Note */}
-                    <p className="text-[10px] text-center text-[var(--color-text-muted)] px-4">
+                    <p className="text-[10px] text-center text-[var(--color-text-muted)]">
                       ✨ Ditenagai oleh Gemini AI • Rekomendasi berdasarkan {
                         ((getUserContext().watchHistory?.length || 0) + (getUserContext().favorites?.length || 0))
                       } anime & {getUserContext().mangaHistory?.length || 0} manga yang kamu ikuti

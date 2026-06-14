@@ -65,7 +65,7 @@ export default function HomePage() {
         {/* Hero Carousel */}
         <HeroBanner anime={heroAnime} loading={trendingLoading} />
 
-        <div className="px-4 space-y-8 mt-6">
+        <div className="px-4 md:px-8 max-w-7xl mx-auto w-full space-y-8 mt-6">
           {/* Trending Now */}
           <section>
             <SectionHeader

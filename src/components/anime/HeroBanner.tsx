@@ -68,7 +68,7 @@ export function HeroBanner({ anime, loading }: HeroBannerProps) {
 
   return (
     <div
-      className="relative w-full overflow-hidden select-none"
+      className="relative w-full overflow-hidden select-none bg-[var(--color-surface)] md:rounded-2xl md:border md:border-[var(--color-border)]"
       style={{ height: "70vw", maxHeight: 560 }}
       onMouseEnter={() => setAutoPlay(false)}
       onMouseLeave={() => setAutoPlay(true)}
@@ -83,17 +83,30 @@ export function HeroBanner({ anime, loading }: HeroBannerProps) {
           exit="exit"
           className="absolute inset-0"
         >
+          {/* Mobile Background */}
           <Image
             src={banner}
             alt={title}
             fill
             priority
-            className="object-cover hero-bg"
+            className="object-cover hero-bg md:hidden"
             sizes="100vw"
           />
+          {/* Desktop Blurred Background */}
+          <div className="hidden md:block absolute inset-0 overflow-hidden">
+            <Image
+              src={banner}
+              alt={title}
+              fill
+              priority
+              className="object-cover blur-xl opacity-20 scale-105"
+              sizes="100vw"
+            />
+          </div>
           {/* Gradient overlays */}
           <div className="absolute inset-0 gradient-bottom" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-bg)] via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-bg)] via-transparent to-transparent md:bg-none" />
+          <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-[var(--color-surface)] via-[var(--color-surface)]/80 to-transparent" />
         </motion.div>
       </AnimatePresence>
 
@@ -104,54 +117,76 @@ export function HeroBanner({ anime, loading }: HeroBannerProps) {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0, transition: { duration: 0.45, delay: 0.1 } }}
           exit={{ opacity: 0 }}
-          className="absolute bottom-0 left-0 right-0 px-4 pb-6 space-y-3 pt-safe"
+          className="absolute inset-0 flex flex-col md:flex-row md:items-center md:justify-between px-4 pb-6 md:px-10 md:pb-10 pt-safe gap-8 max-w-7xl mx-auto w-full"
         >
-          {/* Genre tags */}
-          <div className="flex flex-wrap gap-1.5">
-            {item.genres.slice(0, 3).map((g) => (
-              <Badge key={g} variant="genre" genre={g} />
-            ))}
-          </div>
+          {/* Left Column: Info Text (Mobile: Bottom aligned) */}
+          <div className="mt-auto md:mt-0 flex-1 space-y-3 max-w-xl md:py-6">
+            {/* Genre tags */}
+            <div className="flex flex-wrap gap-1.5">
+              {item.genres.slice(0, 3).map((g) => (
+                <Badge key={g} variant="genre" genre={g} />
+              ))}
+            </div>
 
-          {/* Title */}
-          <h1
-            className="text-2xl font-black leading-tight line-clamp-2 max-w-xs"
-            style={{ fontFamily: "var(--font-display)", textShadow: "0 2px 12px rgba(0,0,0,0.6)" }}
-          >
-            {title}
-          </h1>
+            {/* Title */}
+            <h1
+              className="text-2xl md:text-4xl font-black leading-tight line-clamp-2 md:max-w-xl text-[var(--color-text-primary)]"
+              style={{ fontFamily: "var(--font-display)", textShadow: "0 2px 12px rgba(0,0,0,0.6)" }}
+            >
+              {title}
+            </h1>
 
-          {/* Meta */}
-          <div className="flex items-center gap-3 text-sm">
-            {item.averageScore != null && (
-              <div className="flex items-center gap-1">
-                <Star size={14} fill={getScoreColor(item.averageScore)} color={getScoreColor(item.averageScore)} />
-                <span className="font-bold" style={{ color: getScoreColor(item.averageScore) }}>
-                  {formatScore(item.averageScore)}
+            {/* Meta */}
+            <div className="flex items-center gap-3 text-sm">
+              {item.averageScore != null && (
+                <div className="flex items-center gap-1">
+                  <Star size={14} fill={getScoreColor(item.averageScore)} color={getScoreColor(item.averageScore)} />
+                  <span className="font-bold" style={{ color: getScoreColor(item.averageScore) }}>
+                    {formatScore(item.averageScore)}
+                  </span>
+                </div>
+              )}
+              <span className="text-[var(--color-text-secondary)]">{formatStatus(item.status)}</span>
+              {item.episodes && (
+                <span className="text-[var(--color-text-secondary)]">{item.episodes} eps</span>
+              )}
+              {item.nextAiringEpisode && (
+                <span className="text-[var(--color-accent-2)] font-semibold">
+                  Ep {item.nextAiringEpisode.episode} in {formatCountdown(item.nextAiringEpisode.timeUntilAiring)}
                 </span>
-              </div>
+              )}
+            </div>
+
+            {/* Description/Synopsis for Desktop */}
+            {item.description && (
+              <p 
+                className="hidden md:block text-xs md:text-sm text-[var(--color-text-secondary)] line-clamp-3 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: item.description }}
+              />
             )}
-            <span className="text-[var(--color-text-secondary)]">{formatStatus(item.status)}</span>
-            {item.episodes && (
-              <span className="text-[var(--color-text-secondary)]">{item.episodes} eps</span>
-            )}
-            {item.nextAiringEpisode && (
-              <span className="text-[var(--color-accent-2)] font-semibold">
-                Ep {item.nextAiringEpisode.episode} in {formatCountdown(item.nextAiringEpisode.timeUntilAiring)}
-              </span>
-            )}
+
+            {/* CTA Buttons */}
+            <div className="flex items-center gap-2 pt-2">
+              <Link href={`/anime/${item.id}`}>
+                <Button icon={<Play size={16} fill="white" />} size="md">
+                  Tonton Sekarang
+                </Button>
+              </Link>
+              <Button variant="outline" size="md" icon={<Plus size={16} />}>
+                Tambah List
+              </Button>
+            </div>
           </div>
 
-          {/* CTA Buttons */}
-          <div className="flex items-center gap-2">
-            <Link href={`/anime/${item.id}`}>
-              <Button icon={<Play size={16} fill="white" />} size="md">
-                View Details
-              </Button>
-            </Link>
-            <Button variant="outline" size="md" icon={<Plus size={16} />}>
-              Add to List
-            </Button>
+          {/* Right Column: Portrait Card (Desktop Only) */}
+          <div className="hidden md:block w-48 lg:w-56 aspect-[2/3] shrink-0 rounded-2xl overflow-hidden shadow-2xl border border-[var(--color-border)] relative transform hover:scale-105 transition-all duration-300 select-none">
+            <Image 
+              src={item.coverImage?.large || getCoverImage(item.coverImage)} 
+              alt={title} 
+              fill 
+              className="object-cover" 
+              sizes="(max-width: 1024px) 200px, 250px"
+            />
           </div>
         </motion.div>
       </AnimatePresence>

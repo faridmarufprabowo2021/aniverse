@@ -94,8 +94,8 @@ export default function MyListPage() {
     return (
       <>
         <TopBar />
-        <main className="pt-safe pb-safe min-h-screen flex flex-col">
-          <div className="px-4 pt-20 pb-2">
+        <main className="pt-safe pb-safe min-h-screen flex flex-col max-w-2xl mx-auto w-full px-4">
+          <div className="pt-20 pb-2">
             <h1 className="text-2xl font-black" style={{ fontFamily: "var(--font-display)" }}>
               📋 Daftar Anime Saya
             </h1>
@@ -104,7 +104,7 @@ export default function MyListPage() {
             </p>
           </div>
 
-          <div className="flex-1 flex flex-col items-center justify-center px-6 py-12">
+          <div className="flex-1 flex flex-col items-center justify-center py-12">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -144,9 +144,9 @@ export default function MyListPage() {
   return (
     <>
       <TopBar />
-      <main className="pt-safe pb-safe min-h-screen flex flex-col">
+      <main className="pt-safe pb-safe min-h-screen flex flex-col max-w-5xl mx-auto w-full px-4 md:px-8">
         {/* Header */}
-        <div className="px-4 pt-20 pb-4">
+        <div className="pt-20 pb-4">
           <h1 className="text-2xl font-black flex items-center gap-2" style={{ fontFamily: "var(--font-display)" }}>
             <ListIcon size={24} className="text-purple-400" />
             Daftarku
@@ -157,7 +157,7 @@ export default function MyListPage() {
         </div>
 
         {/* Tabs */}
-        <div className="px-4 mb-4">
+        <div className="mb-4">
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {TABS.map((tab) => (
               <button
@@ -176,7 +176,7 @@ export default function MyListPage() {
         </div>
 
         {/* List */}
-        <div className="flex-1 px-4 pb-28">
+        <div className="flex-1 pb-28">
           <AnimatePresence mode="popLayout">
             {filteredList.length === 0 ? (
               <motion.div

@@ -346,306 +346,349 @@ export default function AnimeDetailPage({ params }: PageProps) {
 
         <motion.div
           variants={containerVariants} initial="hidden" animate="show"
-          className="px-4 pb-10 -mt-28 relative z-10 space-y-6"
+          className="px-4 md:px-8 max-w-7xl mx-auto w-full pb-10 -mt-28 relative z-10 space-y-6"
         >
-          {/* Header */}
-          <motion.div variants={itemVariants} className="flex gap-4 items-end">
-            <div className="relative shrink-0 rounded-xl overflow-hidden border-2 border-[var(--color-border)] shadow-2xl" style={{ width: 110, aspectRatio: "2/3" }}>
-              <Image src={cover} alt={title} fill className="object-cover" sizes="110px" />
-            </div>
-            <div className="flex-1 min-w-0 pb-1">
-              {anime.title.native && (
-                <p className="text-xs text-[var(--color-text-muted)] mb-1" style={{ fontFamily: "var(--font-jp)" }}>{anime.title.native}</p>
-              )}
-              <h1 className="text-xl font-black leading-tight" style={{ fontFamily: "var(--font-display)" }}>{title}</h1>
-              {anime.title.english && anime.title.english !== title && (
-                <p className="text-xs text-[var(--color-text-muted)] mt-0.5">{anime.title.english}</p>
-              )}
-              <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                <Badge variant="status" statusClass={anime.status === "RELEASING" ? "badge-airing" : anime.status === "NOT_YET_RELEASED" ? "badge-upcoming" : anime.status === "CANCELLED" ? "badge-dropped" : "badge-finished"}>
-                  {formatStatus(anime.status)}
-                </Badge>
-                {anime.format && <Badge>{formatAnimeType(anime.format)}</Badge>}
-                {anime.nextAiringEpisode && (
-                  <span className="text-xs text-[var(--color-accent-2)] font-semibold">
-                    Ep {anime.nextAiringEpisode.episode} dalam {formatCountdown(anime.nextAiringEpisode.timeUntilAiring)}
-                  </span>
-                )}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* CTA */}
-          <motion.div variants={itemVariants} className="flex gap-2">
-            <Button 
-               icon={<Plus size={16} />} 
-               fullWidth
-               onClick={() => {
-                 if (!user) {
-                   // Redirect to login if user is not authenticated
-                   window.location.href = `/login?redirect=/anime/${anime.id}`;
-                 } else {
-                   setIsModalOpen(true);
-                 }
-               }}
-            >
-               Tambah ke Daftar
-            </Button>
-            <Button variant="outline" size="md" icon={<Heart size={16} />} />
-            <Button variant="outline" size="md" icon={<Share2 size={16} />} />
-          </motion.div>
-
-          {/* Score & Stats */}
-          <motion.div variants={itemVariants}
-            className="flex items-center gap-4 p-4 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)]">
-            <ScoreRing score={anime.averageScore} size={72} />
-            <div className="flex-1 grid grid-cols-2 gap-3">
-              <div className="text-center">
-                <div className="text-base font-black text-[var(--color-text-primary)]">
-                  #{anime.rankings?.find(r => r.type === "RATED" && r.allTime)?.rank ?? "—"}
+          {/* Main Grid/Flex Container */}
+          <div className="flex flex-col md:flex-row gap-6 lg:gap-10 items-start">
+            
+            {/* COLUMN 1: LEFT SIDEBAR (Desktop: 288px width, Mobile: full width) */}
+            <div className="w-full md:w-72 shrink-0 space-y-6">
+              
+              {/* Cover Card and Titles for Mobile */}
+              <div className="flex gap-4 items-end md:items-start md:flex-col">
+                <div className="relative shrink-0 rounded-2xl overflow-hidden border-2 border-[var(--color-border)] shadow-2xl w-[110px] md:w-full aspect-[2/3]">
+                  <Image src={cover} alt={title} fill className="object-cover" sizes="(max-width: 768px) 110px, 288px" />
                 </div>
-                <div className="text-[10px] text-[var(--color-text-muted)]">Peringkat</div>
-              </div>
-              <div className="text-center">
-                <div className="text-base font-black text-[var(--color-text-primary)]">
-                  {formatNumber(anime.popularity)}
-                </div>
-                <div className="text-[10px] text-[var(--color-text-muted)]">Pengguna</div>
-              </div>
-              <div className="text-center">
-                <div className="text-base font-black text-[var(--color-text-primary)]">
-                  {formatNumber(anime.favourites)}
-                </div>
-                <div className="text-[10px] text-[var(--color-text-muted)]">Favorit</div>
-              </div>
-              <div className="text-center">
-                <div className="text-base font-black" style={{ color: "var(--color-accent-3)" }}>
-                  #{anime.rankings?.find(r => r.type === "POPULAR" && r.allTime)?.rank ?? "—"}
-                </div>
-                <div className="text-[10px] text-[var(--color-text-muted)]">Popularitas</div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Genre */}
-          <motion.div variants={itemVariants} className="flex flex-wrap gap-2">
-            {anime.genres.map(g => (
-              <Link key={g} href={`/search?genre=${encodeURIComponent(g)}`}>
-                <Badge variant="genre" genre={g} />
-              </Link>
-            ))}
-          </motion.div>
-
-          {/* Sinopsis */}
-          {anime.synopsis && (
-            <motion.div variants={itemVariants} className="space-y-2">
-              <h2 className="text-base font-bold" style={{ fontFamily: "var(--font-display)" }}>📖 Sinopsis</h2>
-              <Synopsis text={anime.synopsis} />
-            </motion.div>
-          )}
-
-          {/* ══════ STREAMING: Tonton Sekarang ══════ */}
-          <motion.div variants={itemVariants}>
-            <EpisodeList
-              animeId={anime.id}
-              animeTitle={anime.title.romaji} 
-              titleEnglish={anime.title.english || undefined}
-              coverImage={cover}
-              totalEpisodes={anime.episodes}
-            />
-          </motion.div>
-
-          {/* Info Grid */}
-          <motion.div variants={itemVariants}
-            className="grid grid-cols-2 gap-x-4 gap-y-4 p-4 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)]">
-            <InfoRow label="Format" value={anime.format ? formatAnimeType(anime.format) : undefined} />
-            <InfoRow label="Episode" value={anime.episodes ? `${anime.episodes} ep` : undefined} />
-            <InfoRow label="Durasi" value={formatDuration(anime.duration)} />
-            <InfoRow label="Musim" value={anime.season ? formatSeason(anime.season, anime.year) : anime.year?.toString()} />
-            <InfoRow label="Sumber" value={formatSource(anime.sourceMaterial)} />
-            <InfoRow label="Studio" value={mainStudio?.name} />
-            <InfoRow label="Tayang" value={formatDate(anime.airedFrom)} />
-            <InfoRow label="Selesai" value={formatDate(anime.airedTo)} />
-          </motion.div>
-
-          {/* Manga Source Link */}
-          {(anime.sourceMaterial === "MANGA" || anime.sourceMaterial === "NOVEL") && (
-            <motion.div variants={itemVariants}>
-              <MangaSourceCard animeTitle={anime.title.romaji} titleEnglish={anime.title.english} />
-            </motion.div>
-          )}
-
-          {/* Trailer */}
-          {anime.trailerUrl && (
-            <motion.div variants={itemVariants} className="space-y-3">
-              <h2 className="text-base font-bold" style={{ fontFamily: "var(--font-display)" }}>🎬 Trailer</h2>
-              <div className="relative rounded-2xl overflow-hidden bg-[var(--color-surface)]" style={{ aspectRatio: "16/9" }}>
-                <iframe
-                  src={`${anime.trailerUrl}?mute=1&controls=1`}
-                  title={`${title} Trailer`}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="absolute inset-0 w-full h-full"
-                />
-              </div>
-            </motion.div>
-          )}
-
-          {/* Karakter & Seiyu */}
-          {anime.characters && anime.characters.length > 0 && (
-            <motion.div variants={itemVariants} className="space-y-3">
-              <h2 className="text-base font-bold" style={{ fontFamily: "var(--font-display)" }}>
-                🎭 Karakter & Pengisi Suara
-              </h2>
-              <div className="scroll-x flex gap-3 pb-2">
-                {anime.characters.slice(0, 20).map(c => (
-                  <CharacterCard key={c.id} char={c} />
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {/* Studio + Anime dari Studio */}
-          {mainStudio && (
-            <motion.div variants={itemVariants}>
-              <StudioSection studioId={mainStudio.id} studioName={mainStudio.name} />
-            </motion.div>
-          )}
-
-          {/* Tags */}
-          {anime.tags && anime.tags.length > 0 && (
-            <motion.div variants={itemVariants} className="space-y-3">
-              <h2 className="text-base font-bold" style={{ fontFamily: "var(--font-display)" }}>🏷️ Tag</h2>
-              <div className="flex flex-wrap gap-2">
-                {anime.tags
-                  .filter(t => !t.isMediaSpoiler)
-                  .slice(0, 20)
-                  .map(t => (
-                    <span key={t.name}
-                      className="px-2.5 py-1 rounded-full text-xs font-medium bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[var(--color-text-secondary)]">
-                      {t.name}
-                      {t.rank && <span className="text-[var(--color-text-muted)] ml-1">{t.rank}%</span>}
-                    </span>
-                  ))}
-              </div>
-            </motion.div>
-          )}
-
-          {/* Distribusi Skor */}
-          {anime.scoreDistribution && anime.scoreDistribution.length > 0 && (
-            <motion.div variants={itemVariants}
-              className="space-y-3 p-4 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)]">
-              <h2 className="text-base font-bold" style={{ fontFamily: "var(--font-display)" }}>📊 Distribusi Skor</h2>
-              <div className="space-y-1.5">
-                {[10, 9, 8, 7, 6, 5, 4, 3, 2, 1].map(score => {
-                  const d = anime.scoreDistribution!.find(x => x.score === score);
-                  const max = Math.max(...anime.scoreDistribution!.map(x => x.amount), 1);
-                  return <ScoreBar key={score} score={score} amount={d?.amount ?? 0} max={max} />;
-                })}
-              </div>
-            </motion.div>
-          )}
-
-          {/* Relasi */}
-          {anime.relations && anime.relations.length > 0 && (
-            <motion.div variants={itemVariants} className="space-y-3">
-              <h2 className="text-base font-bold" style={{ fontFamily: "var(--font-display)" }}>🔗 Anime Terkait</h2>
-              <div className="scroll-x flex gap-3 pb-2">
-                {anime.relations.filter(r => r.type === "ANIME").slice(0, 10).map(rel => (
-                  <Link key={rel.id} href={`/anime/${rel.id}`}>
-                    <div className="shrink-0 w-24 space-y-1.5 group">
-                      <div className="relative rounded-lg overflow-hidden bg-[var(--color-surface-2)]" style={{ width: 96, aspectRatio: "2/3" }}>
-                        {rel.coverImage?.medium && (
-                          <Image src={rel.coverImage.medium} alt={getBestTitle(rel.title)} fill
-                            className="object-cover group-hover:scale-105 transition-transform" sizes="96px" />
-                        )}
-                      </div>
-                      <p className="text-[10px] font-medium line-clamp-2 text-[var(--color-text-muted)] group-hover:text-[var(--color-primary)] transition-colors">
-                        {getBestTitle(rel.title)}
-                      </p>
-                      <p className="text-[9px] text-[var(--color-text-muted)] capitalize">
-                        {rel.relationType?.replace(/_/g, " ").toLowerCase()}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {/* Rekomendasi */}
-          {anime.recommendations && anime.recommendations.length > 0 && (
-            <motion.div variants={itemVariants} className="space-y-3">
-              <h2 className="text-base font-bold" style={{ fontFamily: "var(--font-display)" }}>💡 Rekomendasi</h2>
-              <div className="scroll-x flex gap-3 pb-2">
-                {anime.recommendations.slice(0, 10).map(rec => (
-                  <Link key={rec.id} href={`/anime/${rec.id}`}>
-                    <div className="shrink-0 w-24 space-y-1.5 group">
-                      <div className="relative rounded-lg overflow-hidden bg-[var(--color-surface-2)]" style={{ width: 96, aspectRatio: "2/3" }}>
-                        {rec.coverImage?.medium && (
-                          <Image src={rec.coverImage.medium} alt={getBestTitle(rec.title)} fill
-                            className="object-cover group-hover:scale-105 transition-transform" sizes="96px" />
-                        )}
-                      </div>
-                      <p className="text-[10px] font-medium line-clamp-2 text-[var(--color-text-muted)] group-hover:text-[var(--color-primary)] transition-colors">
-                        {getBestTitle(rec.title)}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {/* Streaming Links */}
-          {anime.externalLinks && anime.externalLinks.length > 0 && (
-            <motion.div variants={itemVariants} className="space-y-3">
-              <h2 className="text-base font-bold" style={{ fontFamily: "var(--font-display)" }}>📺 Tempat Nonton</h2>
-              <div className="flex flex-wrap gap-2">
-                {anime.externalLinks.slice(0, 10).map((link, i) => (
-                  <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 px-3 py-2 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl text-xs font-medium hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors">
-                    <ExternalLink size={12} />
-                    {link.site}
-                  </a>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {/* Reviews dari AniList */}
-          {anime.reviews && anime.reviews.length > 0 && (
-            <motion.div variants={itemVariants} className="space-y-3">
-              <h2 className="text-base font-bold" style={{ fontFamily: "var(--font-display)" }}>💬 Ulasan Komunitas</h2>
-              <div className="space-y-3">
-                {anime.reviews.slice(0, 5).map(review => (
-                  <div key={review.id} className="p-4 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)]">
-                    <div className="flex items-center gap-3 mb-2">
-                      {review.user?.avatar ? (
-                        <div className="relative w-8 h-8 rounded-full overflow-hidden shrink-0">
-                          <Image src={review.user.avatar} alt={review.user.name ?? ""} fill className="object-cover" />
-                        </div>
-                      ) : (
-                        <div className="w-8 h-8 rounded-full bg-[var(--color-surface-2)] flex items-center justify-center text-xs font-bold">
-                          {review.user?.name?.[0]?.toUpperCase() ?? "?"}
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold">{review.user?.name ?? "Anonim"}</p>
-                        {review.score && (
-                          <div className="flex items-center gap-1 mt-0.5">
-                            <Star size={10} fill={getScoreColor(review.score)} color={getScoreColor(review.score)} />
-                            <span className="text-[10px] font-bold" style={{ color: getScoreColor(review.score) }}>{review.score}/10</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    {review.summary && <p className="text-xs text-[var(--color-text-secondary)] line-clamp-3">{review.summary}</p>}
+                
+                {/* Titles for Mobile (hidden on Desktop) */}
+                <div className="flex-1 min-w-0 pb-1 md:hidden">
+                  {anime.title.native && (
+                    <p className="text-xs text-[var(--color-text-muted)] mb-1" style={{ fontFamily: "var(--font-jp)" }}>{anime.title.native}</p>
+                  )}
+                  <h1 className="text-xl font-black leading-tight">{title}</h1>
+                  {anime.title.english && anime.title.english !== title && (
+                    <p className="text-xs text-[var(--color-text-muted)] mt-0.5">{anime.title.english}</p>
+                  )}
+                  <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                    <Badge variant="status" statusClass={anime.status === "RELEASING" ? "badge-airing" : anime.status === "NOT_YET_RELEASED" ? "badge-upcoming" : anime.status === "CANCELLED" ? "badge-dropped" : "badge-finished"}>
+                      {formatStatus(anime.status)}
+                    </Badge>
+                    {anime.format && <Badge>{formatAnimeType(anime.format)}</Badge>}
                   </div>
+                </div>
+              </div>
+
+              {/* Action Buttons (CTA) */}
+              <div className="flex gap-2">
+                <Button 
+                   icon={<Plus size={16} />} 
+                   fullWidth
+                   onClick={() => {
+                     if (!user) {
+                       window.location.href = `/login?redirect=/anime/${anime.id}`;
+                     } else {
+                       setIsModalOpen(true);
+                     }
+                   }}
+                >
+                   Tambah ke Daftar
+                </Button>
+                <Button variant="outline" size="md" icon={<Heart size={16} />} />
+                <Button variant="outline" size="md" icon={<Share2 size={16} />} />
+              </div>
+
+              {/* Score & Stats Card */}
+              <div className="flex items-center gap-4 p-4 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)]">
+                <ScoreRing score={anime.averageScore} size={72} />
+                <div className="flex-1 grid grid-cols-2 gap-3">
+                  <div className="text-center">
+                    <div className="text-sm font-black text-[var(--color-text-primary)]">
+                      #{anime.rankings?.find(r => r.type === "RATED" && r.allTime)?.rank ?? "—"}
+                    </div>
+                    <div className="text-[9px] text-[var(--color-text-muted)]">Peringkat</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-sm font-black text-[var(--color-text-primary)]">
+                      {formatNumber(anime.popularity)}
+                    </div>
+                    <div className="text-[9px] text-[var(--color-text-muted)]">Pengguna</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-sm font-black text-[var(--color-text-primary)]">
+                      {formatNumber(anime.favourites)}
+                    </div>
+                    <div className="text-[9px] text-[var(--color-text-muted)]">Favorit</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-sm font-black" style={{ color: "var(--color-accent-3)" }}>
+                      #{anime.rankings?.find(r => r.type === "POPULAR" && r.allTime)?.rank ?? "—"}
+                    </div>
+                    <div className="text-[9px] text-[var(--color-text-muted)]">Popularitas</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Genre Tags (Desktop) */}
+              <div className="hidden md:flex flex-wrap gap-2">
+                {anime.genres.map(g => (
+                  <Link key={g} href={`/search?genre=${encodeURIComponent(g)}`}>
+                    <Badge variant="genre" genre={g} />
+                  </Link>
                 ))}
               </div>
-            </motion.div>
-          )}
+
+              {/* Info Grid Card (Desktop) */}
+              <div className="hidden md:grid grid-cols-2 gap-x-4 gap-y-4 p-4 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)]">
+                <InfoRow label="Format" value={anime.format ? formatAnimeType(anime.format) : undefined} />
+                <InfoRow label="Episode" value={anime.episodes ? `${anime.episodes} ep` : undefined} />
+                <InfoRow label="Durasi" value={formatDuration(anime.duration)} />
+                <InfoRow label="Musim" value={anime.season ? formatSeason(anime.season, anime.year) : anime.year?.toString()} />
+                <InfoRow label="Sumber" value={formatSource(anime.sourceMaterial)} />
+                <InfoRow label="Studio" value={mainStudio?.name} />
+                <InfoRow label="Tayang" value={formatDate(anime.airedFrom)} />
+                <InfoRow label="Selesai" value={formatDate(anime.airedTo)} />
+              </div>
+
+            </div>
+
+            {/* COLUMN 2: RIGHT PANEL (Desktop: 2/3 width) */}
+            <div className="flex-1 w-full space-y-6">
+              
+              {/* Header Title (Desktop Only) */}
+              <div className="hidden md:block pb-4 border-b border-[var(--color-border)]">
+                {anime.title.native && (
+                  <p className="text-sm text-[var(--color-text-muted)] mb-1.5" style={{ fontFamily: "var(--font-jp)" }}>{anime.title.native}</p>
+                )}
+                <h1 className="text-3xl lg:text-4xl font-black leading-tight" style={{ fontFamily: "var(--font-display)" }}>{title}</h1>
+                {anime.title.english && anime.title.english !== title && (
+                  <p className="text-sm text-[var(--color-text-muted)] mt-1">{anime.title.english}</p>
+                )}
+                <div className="flex flex-wrap items-center gap-2 mt-4">
+                  <Badge variant="status" statusClass={anime.status === "RELEASING" ? "badge-airing" : anime.status === "NOT_YET_RELEASED" ? "badge-upcoming" : anime.status === "CANCELLED" ? "badge-dropped" : "badge-finished"}>
+                    {formatStatus(anime.status)}
+                  </Badge>
+                  {anime.format && <Badge>{formatAnimeType(anime.format)}</Badge>}
+                  {anime.nextAiringEpisode && (
+                    <span className="text-sm text-[var(--color-accent-2)] font-semibold">
+                      · Tayang Episode {anime.nextAiringEpisode.episode} dalam {formatCountdown(anime.nextAiringEpisode.timeUntilAiring)}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Genre Tags for Mobile Only */}
+              <div className="flex flex-wrap gap-2 md:hidden">
+                {anime.genres.map(g => (
+                  <Link key={g} href={`/search?genre=${encodeURIComponent(g)}`}>
+                    <Badge variant="genre" genre={g} />
+                  </Link>
+                ))}
+              </div>
+
+              {/* Sinopsis */}
+              {anime.synopsis && (
+                <div className="space-y-2 bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-border)]">
+                  <h2 className="text-base font-bold flex items-center gap-1.5">📖 Sinopsis</h2>
+                  <Synopsis text={anime.synopsis} />
+                </div>
+              )}
+
+              {/* ══════ STREAMING: Tonton Sekarang ══════ */}
+              <EpisodeList
+                animeId={anime.id}
+                animeTitle={anime.title.romaji} 
+                titleEnglish={anime.title.english || undefined}
+                coverImage={cover}
+                totalEpisodes={anime.episodes}
+              />
+
+              {/* Info Grid Card for Mobile Only */}
+              <div className="grid grid-cols-2 gap-x-4 gap-y-4 p-4 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] md:hidden">
+                <InfoRow label="Format" value={anime.format ? formatAnimeType(anime.format) : undefined} />
+                <InfoRow label="Episode" value={anime.episodes ? `${anime.episodes} ep` : undefined} />
+                <InfoRow label="Durasi" value={formatDuration(anime.duration)} />
+                <InfoRow label="Musim" value={anime.season ? formatSeason(anime.season, anime.year) : anime.year?.toString()} />
+                <InfoRow label="Sumber" value={formatSource(anime.sourceMaterial)} />
+                <InfoRow label="Studio" value={mainStudio?.name} />
+                <InfoRow label="Tayang" value={formatDate(anime.airedFrom)} />
+                <InfoRow label="Selesai" value={formatDate(anime.airedTo)} />
+              </div>
+
+              {/* Manga Source Link */}
+              {(anime.sourceMaterial === "MANGA" || anime.sourceMaterial === "NOVEL") && (
+                <MangaSourceCard animeTitle={anime.title.romaji} titleEnglish={anime.title.english} />
+              )}
+
+              {/* Trailer */}
+              {anime.trailerUrl && (
+                <div className="space-y-3 bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-border)]">
+                  <h2 className="text-base font-bold">🎬 Trailer Resmi</h2>
+                  <div className="relative rounded-2xl overflow-hidden bg-black" style={{ aspectRatio: "16/9" }}>
+                    <iframe
+                      src={`${anime.trailerUrl}?mute=1&controls=1`}
+                      title={`${title} Trailer`}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="absolute inset-0 w-full h-full"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Karakter & Seiyu */}
+              {anime.characters && anime.characters.length > 0 && (
+                <div className="space-y-3 bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-border)]">
+                  <h2 className="text-base font-bold">🎭 Karakter & Pengisi Suara</h2>
+                  <div className="scroll-x flex gap-3 pb-2">
+                    {anime.characters.slice(0, 20).map(c => (
+                      <CharacterCard key={c.id} char={c} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Studio + Anime dari Studio */}
+              {mainStudio && (
+                <StudioSection studioId={mainStudio.id} studioName={mainStudio.name} />
+              )}
+
+              {/* Tags */}
+              {anime.tags && anime.tags.length > 0 && (
+                <div className="space-y-3 bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-border)]">
+                  <h2 className="text-base font-bold">🏷️ Tag</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {anime.tags
+                      .filter(t => !t.isMediaSpoiler)
+                      .slice(0, 20)
+                      .map(t => (
+                        <span key={t.name}
+                          className="px-2.5 py-1 rounded-full text-xs font-medium bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[var(--color-text-secondary)]">
+                          {t.name}
+                          {t.rank && <span className="text-[var(--color-text-muted)] ml-1">{t.rank}%</span>}
+                        </span>
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Distribusi Skor */}
+              {anime.scoreDistribution && anime.scoreDistribution.length > 0 && (
+                <div className="space-y-3 p-5 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)]">
+                  <h2 className="text-base font-bold">📊 Distribusi Skor</h2>
+                  <div className="space-y-1.5">
+                    {[10, 9, 8, 7, 6, 5, 4, 3, 2, 1].map(score => {
+                      const d = anime.scoreDistribution!.find(x => x.score === score);
+                      const max = Math.max(...anime.scoreDistribution!.map(x => x.amount), 1);
+                      return <ScoreBar key={score} score={score} amount={d?.amount ?? 0} max={max} />;
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Relasi */}
+              {anime.relations && anime.relations.length > 0 && (
+                <div className="space-y-3 bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-border)]">
+                  <h2 className="text-base font-bold">🔗 Anime Terkait</h2>
+                  <div className="scroll-x flex gap-3 pb-2">
+                    {anime.relations.filter(r => r.type === "ANIME").slice(0, 10).map(rel => (
+                      <Link key={rel.id} href={`/anime/${rel.id}`}>
+                        <div className="shrink-0 w-24 space-y-1.5 group">
+                          <div className="relative rounded-lg overflow-hidden bg-[var(--color-surface-2)]" style={{ width: 96, aspectRatio: "2/3" }}>
+                            {rel.coverImage?.medium && (
+                              <Image src={rel.coverImage.medium} alt={getBestTitle(rel.title)} fill
+                                className="object-cover group-hover:scale-105 transition-transform" sizes="96px" />
+                            )}
+                          </div>
+                          <p className="text-[10px] font-medium line-clamp-2 text-[var(--color-text-muted)] group-hover:text-[var(--color-primary)] transition-colors">
+                            {getBestTitle(rel.title)}
+                          </p>
+                          <p className="text-[9px] text-[var(--color-text-muted)] capitalize">
+                            {rel.relationType?.replace(/_/g, " ").toLowerCase()}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Rekomendasi */}
+              {anime.recommendations && anime.recommendations.length > 0 && (
+                <div className="space-y-3 bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-border)]">
+                  <h2 className="text-base font-bold">💡 Rekomendasi</h2>
+                  <div className="scroll-x flex gap-3 pb-2">
+                    {anime.recommendations.slice(0, 10).map(rec => (
+                      <Link key={rec.id} href={`/anime/${rec.id}`}>
+                        <div className="shrink-0 w-24 space-y-1.5 group">
+                          <div className="relative rounded-lg overflow-hidden bg-[var(--color-surface-2)]" style={{ width: 96, aspectRatio: "2/3" }}>
+                            {rec.coverImage?.medium && (
+                              <Image src={rec.coverImage.medium} alt={getBestTitle(rec.title)} fill
+                                className="object-cover group-hover:scale-105 transition-transform" sizes="96px" />
+                            )}
+                          </div>
+                          <p className="text-[10px] font-medium line-clamp-2 text-[var(--color-text-muted)] group-hover:text-[var(--color-primary)] transition-colors">
+                            {getBestTitle(rec.title)}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Tempat Nonton */}
+              {anime.externalLinks && anime.externalLinks.length > 0 && (
+                <div className="space-y-3 bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-border)]">
+                  <h2 className="text-base font-bold">📺 Tempat Nonton</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {anime.externalLinks.slice(0, 10).map((link, i) => (
+                      <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 px-3 py-2 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl text-xs font-medium hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors">
+                        <ExternalLink size={12} />
+                        {link.site}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Reviews dari AniList */}
+              {anime.reviews && anime.reviews.length > 0 && (
+                <div className="space-y-3 bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-border)]">
+                  <h2 className="text-base font-bold">💬 Ulasan Komunitas</h2>
+                  <div className="space-y-3">
+                    {anime.reviews.slice(0, 5).map(review => (
+                      <div key={review.id} className="p-4 bg-[var(--color-surface-2)] rounded-2xl border border-[var(--color-border)]">
+                        <div className="flex items-center gap-3 mb-2">
+                          {review.user?.avatar ? (
+                            <div className="relative w-8 h-8 rounded-full overflow-hidden shrink-0">
+                              <Image src={review.user.avatar} alt={review.user.name ?? ""} fill className="object-cover" />
+                            </div>
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-[var(--color-surface-3)] flex items-center justify-center text-xs font-bold">
+                              {review.user?.name?.[0]?.toUpperCase() ?? "?"}
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-semibold">{review.user?.name ?? "Anonim"}</p>
+                            {review.score && (
+                              <div className="flex items-center gap-1 mt-0.5">
+                                <Star size={10} fill={getScoreColor(review.score)} color={getScoreColor(review.score)} />
+                                <span className="text-[10px] font-bold" style={{ color: getScoreColor(review.score) }}>{review.score}/10</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        {review.summary && <p className="text-xs text-[var(--color-text-secondary)] line-clamp-3">{review.summary}</p>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+            </div>
+
+          </div>
         </motion.div>
       </main>
       <BottomNavbar />
