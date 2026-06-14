@@ -17,6 +17,16 @@ interface UserContext {
   mangaHistory?: any[];
 }
 
+function escapeHTML(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
+    .replace(/\//g, "&#x2F;");
+}
+
 function getUserContext(): UserContext {
   if (typeof window === "undefined") return {};
   const ctx: UserContext = {};
@@ -604,7 +614,7 @@ Jangan rekomendasikan manga yang sudah ada di daftar.`;
                         <div
                           className="text-[12px] leading-relaxed text-zinc-300 whitespace-pre-wrap select-text pr-1 max-h-[500px] overflow-y-auto scrollbar-thin"
                           dangerouslySetInnerHTML={{
-                            __html: currentResult
+                            __html: escapeHTML(currentResult)
                               .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
                               .replace(/\n/g, "<br/>")
                           }}

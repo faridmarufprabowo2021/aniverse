@@ -62,6 +62,47 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default function MangaDetailLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+export default async function MangaDetailLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const manga = await fetchMangaMeta(slug);
+
+  const jsonLd = manga
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Book",
+        "name": (manga.title || "Manga").replace(/^Komik\n\s*/i, "").trim(),
+        "description": (manga.description || "").slice(0, 250),
+        "image": manga.image,
+        "author": manga.detail?.author
+          ? { "@type": "Person", "name": manga.detail.author }
+          : undefined,
+        "genre": (manga.genres || []).map((g: any) => g.name),
+        "aggregateRating": manga.rating
+          ? {
+              "@type": "AggregateRating",
+              "ratingValue": parseFloat(manga.rating),
+              "bestRating": 10,
+              "worstRating": 0,
+            }
+          : undefined,
+      }
+    : null;
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      {children}
+    </>
+  );
 }

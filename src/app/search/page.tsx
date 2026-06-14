@@ -415,6 +415,10 @@ function SearchContent() {
       </div>
 
       <main className="max-w-7xl mx-auto w-full px-4 md:px-8 py-6 pb-safe">
+        {/* Visually hidden heading for SEO */}
+        <h1 style={{ position: "absolute", width: "1px", height: "1px", padding: "0", margin: "-1px", overflow: "hidden", clip: "rect(0, 0, 0, 0)", whiteSpace: "nowrap", border: "0" }}>
+          Cari Anime & Manga Sub Indo — AniVerse
+        </h1>
         {/* Desktop Sidebar Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Sidebar Filter - Desktop Only */}

@@ -36,6 +36,16 @@ const SUGGESTIONS = [
   "Anime yang bikin nangis",
 ];
 
+function escapeHTML(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
+    .replace(/\//g, "&#x2F;");
+}
+
 // ─── RAG: Collect user data from localStorage ────
 
 function getUserContext(): UserContext {
@@ -334,7 +344,7 @@ export function AIChatWidget() {
                         : "bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-bl-sm"
                     }`}
                     dangerouslySetInnerHTML={{
-                      __html: msg.text
+                      __html: escapeHTML(msg.text)
                         .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
                         .replace(/\n/g, "<br/>")
                     }}

@@ -4,6 +4,16 @@ import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Camera, Upload, X, Loader2, Search, ImageIcon, Sparkles } from "lucide-react";
 
+function escapeHTML(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
+    .replace(/\//g, "&#x2F;");
+}
+
 interface ImageSearchModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -191,7 +201,7 @@ export function ImageSearchModal({ isOpen, onClose }: ImageSearchModalProps) {
                       <div
                         className="text-xs leading-relaxed whitespace-pre-wrap result-markdown"
                         dangerouslySetInnerHTML={{
-                          __html: result
+                          __html: escapeHTML(result)
                             .replace(/### (.*)/g, '<div class="result-heading">$1</div>')
                             .replace(/## (.*)/g, '<div class="result-heading">$1</div>')
                             .replace(/---/g, '<hr class="result-hr"/>')

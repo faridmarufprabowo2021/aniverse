@@ -67,9 +67,9 @@ export default function SeasonalPage() {
               </button>
 
               <div className="text-center">
-                <div className="text-lg font-black" style={{ fontFamily: "var(--font-display)" }}>
+                <h1 className="text-lg font-black" style={{ fontFamily: "var(--font-display)" }}>
                   {SEASON_LABELS[season]} {year}
-                </div>
+                </h1>
                 <div className="text-xs text-[var(--color-text-muted)]">
                   {anime.length > 0 && !loading ? `${anime.length} anime` : ""}
                 </div>

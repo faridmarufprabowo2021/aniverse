@@ -89,29 +89,52 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     alternates: {
       canonical: `/anime/${id}`,
     },
-    other: {
-      // JSON-LD structured data for Google Rich Results
-      "script:ld+json": JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "TVSeries",
-        name: title,
-        alternateName: anime.title?.romaji !== title ? anime.title?.romaji : undefined,
-        description: stripHtmlTags(anime.description || ""),
-        image: image,
-        genre: anime.genres,
-        numberOfEpisodes: anime.episodes,
-        productionCompany: studio ? { "@type": "Organization", name: studio } : undefined,
-        aggregateRating: anime.averageScore ? {
-          "@type": "AggregateRating",
-          ratingValue: anime.averageScore / 10,
-          bestRating: 10,
-          worstRating: 0,
-        } : undefined,
-      }),
-    },
   };
 }
 
-export default function AnimeDetailLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+export default async function AnimeDetailLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const anime = await fetchAnimeMetadata(id);
+
+  const jsonLd = anime
+    ? {
+        "@context": "https://schema.org",
+        "@type": "TVSeries",
+        "name": anime.title?.english || anime.title?.romaji || "Anime",
+        "alternateName": anime.title?.romaji !== anime.title?.english ? anime.title?.romaji : undefined,
+        "description": stripHtmlTags(anime.description || "").slice(0, 250),
+        "image": anime.coverImage?.extraLarge || anime.coverImage?.large,
+        "genre": anime.genres,
+        "numberOfEpisodes": anime.episodes,
+        "productionCompany": anime.studios?.nodes?.[0]?.name
+          ? { "@type": "Organization", name: anime.studios.nodes[0].name }
+          : undefined,
+        "aggregateRating": anime.averageScore
+          ? {
+              "@type": "AggregateRating",
+              "ratingValue": anime.averageScore / 10,
+              "bestRating": 10,
+              "worstRating": 0,
+            }
+          : undefined,
+      }
+    : null;
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      {children}
+    </>
+  );
 }

@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   keywords: ["anime", "manga", "daftar anime", "anilist", "myanimelist", "anime musiman", "tracker anime"],
   authors: [{ name: "AniVerse" }],
   creator: "AniVerse",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://aniverse-lilac.vercel.app"),
   openGraph: {
     type: "website",
     locale: "id_ID",
@@ -61,6 +61,9 @@ export const metadata: Metadata = {
     title: "AniVerse",
   },
   manifest: "/manifest.json",
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || "",
+  },
 };
 
 export const viewport: Viewport = {
@@ -110,6 +113,22 @@ export default function RootLayout({
             } catch(e) {}
           })();
         `}} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "AniVerse",
+              "url": process.env.NEXT_PUBLIC_APP_URL || "https://aniverse-lilac.vercel.app",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": `${process.env.NEXT_PUBLIC_APP_URL || "https://aniverse-lilac.vercel.app"}/search?q={search_term_string}`,
+                "query-input": "required name=search_term_string"
+              }
+            })
+          }}
+        />
         <Providers>
           <div className="flex min-h-dvh flex-col md:flex-row">
             <DesktopSidebar />
